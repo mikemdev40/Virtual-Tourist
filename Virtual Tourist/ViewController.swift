@@ -15,7 +15,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
         static let longPressDuration = 0.5
     }
     
-    let pinAnnotation = MKPointAnnotation()
+    var activeAnnotion = MKPointAnnotation()
 
     @IBOutlet weak var mapView: MKMapView! {
         didSet {
@@ -31,35 +31,27 @@ class ViewController: UIViewController, MKMapViewDelegate {
         var pointPressed: CGPoint
         var coordinate: CLLocationCoordinate2D
         
-//        switch gesture.state {
-//        case .Began:
-//            pointPressed = gesture.locationInView(mapView)
-//            coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
-//            pinAnnotation.coordinate = coordinate
-//            pinAnnotation.title = "Test"
-//            mapView.addAnnotation(pinAnnotation)
-//        case .Changed:
-//            pointPressed = gesture.locationInView(mapView)
-//            coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
-//            pinAnnotation.coordinate = coordinate
-//        case .Ended:
-//            pointPressed = gesture.locationInView(mapView)
-//            coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
-//            pinAnnotation.coordinate = coordinate
-//        default:
-//            break
-//        }
-
-        if gesture.state == .Began {
-            let pointPressed = gesture.locationInView(mapView)
-            let coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
-            let annotation = MKPointAnnotation()
-            annotation.coordinate = coordinate
-            annotation.title = "Test"
-            mapView.addAnnotation(annotation)
+        switch gesture.state {
+        case .Began:
+            let newAnnotation = MKPointAnnotation()
+            activeAnnotion = newAnnotation
+            pointPressed = gesture.locationInView(mapView)
+            coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
+            newAnnotation.coordinate = coordinate
+            newAnnotation.title = "Test"
+            mapView.addAnnotation(newAnnotation)
+        case .Changed:
+            pointPressed = gesture.locationInView(mapView)
+            coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
+            activeAnnotion.coordinate = coordinate
+        case .Ended:
+            pointPressed = gesture.locationInView(mapView)
+            coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
+            activeAnnotion.coordinate = coordinate
+        default:
+            break
         }
     }
-    
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         
