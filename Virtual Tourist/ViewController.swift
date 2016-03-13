@@ -15,6 +15,8 @@ class ViewController: UIViewController, MKMapViewDelegate {
         static let longPressDuration = 0.5
     }
     
+    let pinAnnotation = MKPointAnnotation()
+
     @IBOutlet weak var mapView: MKMapView! {
         didSet {
             mapView.delegate = self
@@ -25,6 +27,29 @@ class ViewController: UIViewController, MKMapViewDelegate {
     }
     
     func dropPin(gesture: UIGestureRecognizer) {
+        
+        var pointPressed: CGPoint
+        var coordinate: CLLocationCoordinate2D
+        
+//        switch gesture.state {
+//        case .Began:
+//            pointPressed = gesture.locationInView(mapView)
+//            coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
+//            pinAnnotation.coordinate = coordinate
+//            pinAnnotation.title = "Test"
+//            mapView.addAnnotation(pinAnnotation)
+//        case .Changed:
+//            pointPressed = gesture.locationInView(mapView)
+//            coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
+//            pinAnnotation.coordinate = coordinate
+//        case .Ended:
+//            pointPressed = gesture.locationInView(mapView)
+//            coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
+//            pinAnnotation.coordinate = coordinate
+//        default:
+//            break
+//        }
+
         if gesture.state == .Began {
             let pointPressed = gesture.locationInView(mapView)
             let coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
@@ -44,13 +69,22 @@ class ViewController: UIViewController, MKMapViewDelegate {
             annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "location")
             annotationView?.canShowCallout = true
             annotationView?.pinTintColor = MKPinAnnotationView.redPinColor()
-          //  annotationView?.rightCalloutAccessoryView = UIButton(type: .DetailDisclosure)
             
         } else {
             annotationView?.annotation = annotation
         }
         
+        annotationView?.draggable = true
+        
         return annotationView
+    }
+    
+    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
+        
+        if newState == .Ending {
+            print("dropped")
+        }
+        
     }
     
     override func viewDidLoad() {
