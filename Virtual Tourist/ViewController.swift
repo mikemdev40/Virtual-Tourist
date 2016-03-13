@@ -16,7 +16,9 @@ class ViewController: UIViewController, MKMapViewDelegate {
     }
     
     var activeAnnotion = MKPointAnnotation()
-
+    var pointPressed = CGPoint()
+    var coordinate = CLLocationCoordinate2D()
+    
     @IBOutlet weak var mapView: MKMapView! {
         didSet {
             mapView.delegate = self
@@ -28,29 +30,28 @@ class ViewController: UIViewController, MKMapViewDelegate {
     
     func dropPin(gesture: UIGestureRecognizer) {
         
-        var pointPressed: CGPoint
-        var coordinate: CLLocationCoordinate2D
-        
         switch gesture.state {
         case .Began:
             let newAnnotation = MKPointAnnotation()
             activeAnnotion = newAnnotation
-            pointPressed = gesture.locationInView(mapView)
-            coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
+            updatePinLocatin(gesture)
             newAnnotation.coordinate = coordinate
             newAnnotation.title = "Test"
             mapView.addAnnotation(newAnnotation)
         case .Changed:
-            pointPressed = gesture.locationInView(mapView)
-            coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
+            updatePinLocatin(gesture)
             activeAnnotion.coordinate = coordinate
         case .Ended:
-            pointPressed = gesture.locationInView(mapView)
-            coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
+            updatePinLocatin(gesture)
             activeAnnotion.coordinate = coordinate
         default:
             break
         }
+    }
+    
+    func updatePinLocatin(gesture: UIGestureRecognizer) {
+        pointPressed = gesture.locationInView(mapView)
+        coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
     }
     
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
