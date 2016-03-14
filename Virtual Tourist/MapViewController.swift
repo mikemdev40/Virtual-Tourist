@@ -9,10 +9,11 @@
 import UIKit
 import MapKit
 
-class ViewController: UIViewController, MKMapViewDelegate {
+class MapViewController: UIViewController {
 
     struct Constants {
-        static let longPressDuration = 0.5
+        static let LongPressDuration = 0.5
+        static let ShowPhotoAlbumSegue = "ShowPhotoAlbum"
     }
     
     var activeAnnotion = MKPointAnnotation()
@@ -23,7 +24,7 @@ class ViewController: UIViewController, MKMapViewDelegate {
         didSet {
             mapView.delegate = self
             let longPress = UILongPressGestureRecognizer(target: self, action: "dropPin:")
-            longPress.minimumPressDuration = Constants.longPressDuration
+            longPress.minimumPressDuration = Constants.LongPressDuration
             mapView.addGestureRecognizer(longPress)
         }
     }
@@ -38,12 +39,10 @@ class ViewController: UIViewController, MKMapViewDelegate {
             newAnnotation.coordinate = coordinate
             newAnnotation.title = "Test"
             mapView.addAnnotation(newAnnotation)
-        case .Changed:
+        case .Changed, .Ended:  //need to include .Changed so that the pin will move along with the finger drag
             updatePinLocatin(gesture)
             activeAnnotion.coordinate = coordinate
-        case .Ended:
-            updatePinLocatin(gesture)
-            activeAnnotion.coordinate = coordinate
+            print("moved to  \(activeAnnotion.coordinate)")
         default:
             break
         }
@@ -54,43 +53,35 @@ class ViewController: UIViewController, MKMapViewDelegate {
         coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
     }
     
-    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
-        
-        var annotationView = mapView.dequeueReusableAnnotationViewWithIdentifier("location") as? MKPinAnnotationView
-        
-        if annotationView == nil {
-            annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "location")
-            annotationView?.canShowCallout = true
-            annotationView?.pinTintColor = MKPinAnnotationView.redPinColor()
-            
-        } else {
-            annotationView?.annotation = annotation
-        }
-        
-        annotationView?.draggable = true
-        
-        return annotationView
-    }
-    
-    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
-        
-        if newState == .Ending {
-            print("dropped")
-        }
-        
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
      
-        
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-
 }
 
+//MAPVIEW DELEGATE METHODS
+
+extension MapViewController: MKMapViewDelegate {
+    
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+        var annotationView = mapView.dequeueReusableAnnotationViewWithIdentifier("location") as? MKPinAnnotationView
+        if annotationView == nil {
+            annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "location")
+            annotationView?.pinTintColor = MKPinAnnotationView.redPinColor()
+        } else {
+            annotationView?.annotation = annotation
+        }
+        annotationView?.draggable = true
+        return annotationView
+    }
+    
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        performSegueWithIdentifier(Constants.ShowPhotoAlbumSegue, sender: view)
+    }
+    
+    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
+        if newState == .Ending {
+            print("dropped at  \(view.annotation?.coordinate)")
+        }
+    }
+}
