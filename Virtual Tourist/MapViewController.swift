@@ -42,7 +42,7 @@ class MapViewController: UIViewController {
         case .Changed, .Ended:  //need to include .Changed so that the pin will move along with the finger drag
             updatePinLocatin(gesture)
             activeAnnotion.coordinate = coordinate
-            print("moved to  \(activeAnnotion.coordinate)")
+            print("moved to \(activeAnnotion.coordinate)")
         default:
             break
         }
@@ -75,13 +75,17 @@ extension MapViewController: MKMapViewDelegate {
         return annotationView
     }
     
-    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
-        performSegueWithIdentifier(Constants.ShowPhotoAlbumSegue, sender: view)
-    }
+//    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+//        performSegueWithIdentifier(Constants.ShowPhotoAlbumSegue, sender: view)
+//    }
     
     func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
         if newState == .Ending {
-            print("dropped at  \(view.annotation?.coordinate)")
+            print("grabbed and moved to \(view.annotation?.coordinate)")
         }
+    }
+    
+    func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        print(mapView.region)
     }
 }
