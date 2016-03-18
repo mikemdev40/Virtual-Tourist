@@ -20,6 +20,7 @@ class MapViewController: UIViewController {
     var pointPressed = CGPoint()
     var coordinate = CLLocationCoordinate2D()
     
+    //Set up the longpress gesture recognizer when the map view outlet gets set
     @IBOutlet weak var mapView: MKMapView! {
         didSet {
             mapView.delegate = self
@@ -29,6 +30,7 @@ class MapViewController: UIViewController {
         }
     }
     
+    //method that gets called when the long press gesture recognizer registers a long press; this function places an annotation view as soon as the long press begins, but immediately moves to the .changed state in which the location gets updated with the finger scroll (allowing the pin to move with the finger).
     func dropPin(gesture: UIGestureRecognizer) {
         
         switch gesture.state {
@@ -48,6 +50,7 @@ class MapViewController: UIViewController {
         }
     }
     
+    //method that was created to reduce redundant code; the convertPoint doesn't actally convert a location (since the convertPoint is occurring on the same view that it is converting to! however, it is still needed because it performs the role of converting the pointPressed, which is a CGpoint, to a CLLocationCoordinate2D, which is the type required in order to add it to the map view.
     func updatePinLocatin(gesture: UIGestureRecognizer) {
         pointPressed = gesture.locationInView(mapView)
         coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
@@ -74,6 +77,8 @@ extension MapViewController: MKMapViewDelegate {
         annotationView?.draggable = true
         return annotationView
     }
+
+//TODO: Issue to resolve; first tap on annotation registers the "didSelectAnnotationView" method, but only after the second tap does the grab and hold functionality take place
     
 //    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
 //        performSegueWithIdentifier(Constants.ShowPhotoAlbumSegue, sender: view)
