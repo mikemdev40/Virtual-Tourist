@@ -79,18 +79,33 @@ class MapViewController: UIViewController {
         }
     }
     
+    func mapViewRegionDidChangeFromUserInteraction() -> Bool {
+        let view = self.mapView.subviews[0]
+        //  Look through gesture recognizers to determine whether this region change is from user interaction
+        if let gestureRecognizers = view.gestureRecognizers {
+            for recognizer in gestureRecognizers {
+                if (recognizer.state == UIGestureRecognizerState.Began || recognizer.state == UIGestureRecognizerState.Ended) {
+                    print("user interaction")
+                    return true
+                }
+            }
+        }
+        return false
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
      
         
     }
     
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
         
         if let savedRegion = NSUserDefaults.standardUserDefaults().objectForKey("savedMapRegion") as? [String: Double] {
             let center = CLLocationCoordinate2D(latitude: savedRegion["mapRegionCenterLat"]!, longitude: savedRegion["mapRegionCenterLon"]!)
             let span = MKCoordinateSpan(latitudeDelta: savedRegion["mapRegionSpanLatDelta"]!, longitudeDelta: savedRegion["mapRegionSpanLonDelta"]!)
+            print("loaded: \(center) \(span)")
             mapView.region = MKCoordinateRegion(center: center, span: span)
         }
     }
@@ -125,16 +140,20 @@ extension MapViewController: MKMapViewDelegate {
             print("grabbed and moved to \(view.annotation?.coordinate)")
         }
     }
+
+//TODO: fix the slight shifting when loading as a result of the two invocations of this delegate method (WHY IS THIS GETTING CALLED MORE THAN ONCE?  see http://stackoverflow.com/questions/33131213/regiondidchange-called-several-times-on-app-load-swift
     
     func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         print(mapView.region)
         
-        let regionToSave = [
-            "mapRegionCenterLat": mapView.region.center.latitude,
-            "mapRegionCenterLon": mapView.region.center.longitude,
-            "mapRegionSpanLatDelta": mapView.region.span.latitudeDelta,
-            "mapRegionSpanLonDelta": mapView.region.span.longitudeDelta
-        ]
-        NSUserDefaults.standardUserDefaults().setObject(regionToSave, forKey: "savedMapRegion")
+        if mapViewRegionDidChangeFromUserInteraction() {
+            let regionToSave = [
+                "mapRegionCenterLat": mapView.region.center.latitude,
+                "mapRegionCenterLon": mapView.region.center.longitude,
+                "mapRegionSpanLatDelta": mapView.region.span.latitudeDelta,
+                "mapRegionSpanLonDelta": mapView.region.span.longitudeDelta
+            ]
+            NSUserDefaults.standardUserDefaults().setObject(regionToSave, forKey: "savedMapRegion")
+        }
     }
 }
