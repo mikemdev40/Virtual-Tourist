@@ -78,7 +78,7 @@ class MapViewController: UIViewController {
             }
         }
     }
-    
+    //the method below is from http://stackoverflow.com/questions/33131213/regiondidchange-called-several-times-on-app-load-swift and is used to detect whether the map region was updated as a result of a user interacting with the map (i.e. through the user scrolling zooming); this method is needed for proper loading and saving the of most recent zoom/pan of the map, which gets saved when a user updates it and saved/loaded each time the app is run; this method is used within the "regionDidChangeAnimated" map delegate method, and is only needed for the initial loading of the map, because when the app loads, the map gets initially set and regionDidChangeAnimated method gets called in between viewWillAppear and viewDidAppear (and this initial location is unrelated to the loaded/saved location), but this initial setting is NOT a result of the user interacting with the map and so we do NOT want to save it as though it was a user-selected location for a save (and potentially immediately overwrite a user's saved location that has yet to even be loaded!); hence, in the regionDidChangeAnimated method, this method is invoked to check to see if the region was changed as a result of the USER moving it, which allows for the distinction between when the app "pre-sets" the map upon loading (which is NOT saved) and a user-generated region update which IS saved to NSUserDefaults
     func mapViewRegionDidChangeFromUserInteraction() -> Bool {
         let view = self.mapView.subviews[0]
         //  Look through gesture recognizers to determine whether this region change is from user interaction
@@ -96,16 +96,25 @@ class MapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
      
+        print("viewDidLoad")
         
     }
     
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        print("viewWillAppear")
+    }
+    
+    //the loading of a user's saved map zoom/pan/location setting is performed in viewDIDappear rather than viewWILLappear because the map gets initially set to an app-determined location and regionDidChangeAnimated method gets called in BETWEEN viewWillAppear and viewDidAppear (and this initial location is NOT related to the loaded/saved location), so the code to load a user's saved preferences is delayed until now so that the saved location is loaded AFTER the app pre-sets the map, rather then before (and thus being overwritten, or "shifted" to a different location); it is ensured that the initial auotmatica "pre-set" region of the map is not saved as a user-based save (thus overwriting a user's save) via the mapViewRegionDidChangeFromUserInteraction method, which checks to make sure that when regionDidChangeAnimated is invoked, it is in response to user-generated input
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
+        print("viewDidAppear")
         
         if let savedRegion = NSUserDefaults.standardUserDefaults().objectForKey("savedMapRegion") as? [String: Double] {
             let center = CLLocationCoordinate2D(latitude: savedRegion["mapRegionCenterLat"]!, longitude: savedRegion["mapRegionCenterLon"]!)
             let span = MKCoordinateSpan(latitudeDelta: savedRegion["mapRegionSpanLatDelta"]!, longitudeDelta: savedRegion["mapRegionSpanLonDelta"]!)
-            print("loaded: \(center) \(span)")
+            print("loaded: \(center)")
             mapView.region = MKCoordinateRegion(center: center, span: span)
         }
     }
@@ -140,11 +149,9 @@ extension MapViewController: MKMapViewDelegate {
             print("grabbed and moved to \(view.annotation?.coordinate)")
         }
     }
-
-//TODO: fix the slight shifting when loading as a result of the two invocations of this delegate method (WHY IS THIS GETTING CALLED MORE THAN ONCE?  see http://stackoverflow.com/questions/33131213/regiondidchange-called-several-times-on-app-load-swift
     
     func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-        print(mapView.region)
+        print("region did change to \(mapView.region.center)")
         
         if mapViewRegionDidChangeFromUserInteraction() {
             let regionToSave = [
