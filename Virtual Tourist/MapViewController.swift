@@ -41,10 +41,14 @@ class MapViewController: UIViewController {
             newAnnotation.coordinate = coordinate
             newAnnotation.title = "Test"
             mapView.addAnnotation(newAnnotation)
-        case .Changed, .Ended:  //need to include .Changed so that the pin will move along with the finger drag
+        case .Changed: //need to include .Changed so that the pin will move along with the finger drag
             updatePinLocatin(gesture)
             activeAnnotion.coordinate = coordinate
             print("moved to \(activeAnnotion.coordinate)")
+        case .Ended:
+            updatePinLocatin(gesture)
+            activeAnnotion.coordinate = coordinate
+            lookUpLocation(activeAnnotion)
         default:
             break
         }
@@ -54,6 +58,25 @@ class MapViewController: UIViewController {
     func updatePinLocatin(gesture: UIGestureRecognizer) {
         pointPressed = gesture.locationInView(mapView)
         coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
+    }
+    
+    func lookUpLocation(annotation: MKAnnotation) {  //i put the argument here as MKAnnotation rather than MKPointAnnotation just to keep the function more resusable! it just as easily have been MKPointAnnoation, in which case the downcast that happens in the completion closure below would not have been necessary
+        let geocoder = CLGeocoder()
+        
+        let location = CLLocation(latitude: annotation.coordinate.latitude, longitude: annotation.coordinate.longitude)
+        geocoder.reverseGeocodeLocation(location) { (placemarksArray, error) in
+            if let error = error {
+            //TODO: Add a display alert method and print error to display alert
+                print(error.localizedDescription)
+            } else if let placemarks = placemarksArray {
+                let place = placemarks[0].locality
+                if let pointAnnotation = annotation as? MKPointAnnotation {  //note that is necessary to first downcast the annotation as an MKPointAnnotation since the title property would otherwise not be settable
+                    dispatch_async(dispatch_get_main_queue()) {
+                        pointAnnotation.title = place
+                    }
+                }
+            }
+        }
     }
     
     override func viewDidLoad() {
@@ -70,10 +93,12 @@ extension MapViewController: MKMapViewDelegate {
         var annotationView = mapView.dequeueReusableAnnotationViewWithIdentifier("location") as? MKPinAnnotationView
         if annotationView == nil {
             annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "location")
+            annotationView?.canShowCallout = true
             annotationView?.pinTintColor = MKPinAnnotationView.redPinColor()
         } else {
             annotationView?.annotation = annotation
         }
+        
         annotationView?.draggable = true
         return annotationView
     }
