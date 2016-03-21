@@ -82,6 +82,17 @@ class MapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
      
+        
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if let savedRegion = NSUserDefaults.standardUserDefaults().objectForKey("savedMapRegion") as? [String: Double] {
+            let center = CLLocationCoordinate2D(latitude: savedRegion["mapRegionCenterLat"]!, longitude: savedRegion["mapRegionCenterLon"]!)
+            let span = MKCoordinateSpan(latitudeDelta: savedRegion["mapRegionSpanLatDelta"]!, longitudeDelta: savedRegion["mapRegionSpanLonDelta"]!)
+            mapView.region = MKCoordinateRegion(center: center, span: span)
+        }
     }
 }
 
@@ -117,5 +128,13 @@ extension MapViewController: MKMapViewDelegate {
     
     func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         print(mapView.region)
+        
+        let regionToSave = [
+            "mapRegionCenterLat": mapView.region.center.latitude,
+            "mapRegionCenterLon": mapView.region.center.longitude,
+            "mapRegionSpanLatDelta": mapView.region.span.latitudeDelta,
+            "mapRegionSpanLonDelta": mapView.region.span.longitudeDelta
+        ]
+        NSUserDefaults.standardUserDefaults().setObject(regionToSave, forKey: "savedMapRegion")
     }
 }
