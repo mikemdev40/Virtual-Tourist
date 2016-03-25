@@ -7,10 +7,27 @@
 //
 
 import UIKit
+import MapKit
 
 class PhotoAlbumViewController: UIViewController {
 
+    struct Constants {
+        static let SpanDeltaLongitude: CLLocationDegrees = 0.5
+    }
+    
+    var SpanDeltaLatitude: CLLocationDegrees {
+        let mapViewRatio = mapView.frame.height / mapView.frame.width
+        return Constants.SpanDeltaLongitude * Double(mapViewRatio)
+    }
+    
     var localityName: String?
+    var annotationToShow: MKAnnotation!
+    
+    @IBOutlet weak var mapView: MKMapView! {
+        didSet {
+            mapView.delegate = self
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,6 +36,9 @@ class PhotoAlbumViewController: UIViewController {
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        
+        mapView.region = MKCoordinateRegion(center: annotationToShow.coordinate, span: MKCoordinateSpan(latitudeDelta: SpanDeltaLatitude, longitudeDelta: Constants.SpanDeltaLongitude))
+        mapView.addAnnotation(annotationToShow)
         
         if localityName != nil {
             title = localityName
@@ -43,4 +63,12 @@ class PhotoAlbumViewController: UIViewController {
     }
     */
 
+}
+
+extension PhotoAlbumViewController: MKMapViewDelegate {
+    func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+        let pin = MKPinAnnotationView()
+        pin.pinTintColor = UIColor.redColor()
+        return pin
+    }
 }

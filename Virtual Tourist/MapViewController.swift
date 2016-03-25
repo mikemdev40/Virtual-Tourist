@@ -108,9 +108,12 @@ class MapViewController: UIViewController {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == Constants.ShowPhotoAlbumSegue {
-            if let destinationViewController = segue.destinationViewController as? PhotoAlbumViewController {
-                if let senderTitle = (sender as? MKAnnotationView)?.annotation?.title {
-                    destinationViewController.localityName = senderTitle
+            if let destinationViewController = segue.destinationViewController as? PhotoAlbumViewController, let senderAnnotationView = sender as? MKAnnotationView {
+                if let annotation = senderAnnotationView.annotation {
+                    destinationViewController.annotationToShow = annotation
+                    if let title = annotation.title {
+                        destinationViewController.localityName = title
+                    }
                 }
             }
         }
