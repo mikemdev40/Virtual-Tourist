@@ -13,6 +13,7 @@
 		7A0091AB1C93C92D00757C49 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A0091AA1C93C92D00757C49 /* Assets.xcassets */; };
 		7A0091AE1C93C92D00757C49 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7A0091AC1C93C92D00757C49 /* LaunchScreen.storyboard */; };
 		7A0091B61C965DE700757C49 /* PhotoAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0091B51C965DE700757C49 /* PhotoAlbumViewController.swift */; };
+		7A51DB711CA5A72400A6A1FA /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A51DB701CA5A72400A6A1FA /* PhotoCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		7A0091AD1C93C92D00757C49 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7A0091AF1C93C92D00757C49 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7A0091B51C965DE700757C49 /* PhotoAlbumViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAlbumViewController.swift; sourceTree = "<group>"; };
+		7A51DB701CA5A72400A6A1FA /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +65,7 @@
 				7A0091AA1C93C92D00757C49 /* Assets.xcassets */,
 				7A0091AC1C93C92D00757C49 /* LaunchScreen.storyboard */,
 				7A0091AF1C93C92D00757C49 /* Info.plist */,
+				7A51DB701CA5A72400A6A1FA /* PhotoCollectionViewCell.swift */,
 			);
 			path = "Virtual Tourist";
 			sourceTree = "<group>";
@@ -140,6 +143,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A0091A61C93C92D00757C49 /* MapViewController.swift in Sources */,
+				7A51DB711CA5A72400A6A1FA /* PhotoCollectionViewCell.swift in Sources */,
 				7A0091A41C93C92D00757C49 /* AppDelegate.swift in Sources */,
 				7A0091B61C965DE700757C49 /* PhotoAlbumViewController.swift in Sources */,
 			);

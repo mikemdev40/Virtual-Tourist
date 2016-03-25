@@ -57,22 +57,38 @@
                                 <rect key="frame" x="0.0" y="64" width="600" height="123.5"/>
                             </mapView>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="3rc-2F-VAH">
-                                <rect key="frame" x="0.0" y="187.5" width="600" height="412.5"/>
+                                <rect key="frame" x="0.0" y="187" width="600" height="412.5"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="ELZ-em-LFF">
-                                    <size key="itemSize" width="50" height="50"/>
+                                    <size key="itemSize" width="134" height="134"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="Xuc-M1-hAN">
-                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoCell" id="Xuc-M1-hAN" customClass="PhotoCollectionViewCell" customModule="Virtual_Tourist" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="134" height="134"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="134" height="134"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="ldk-IW-YMr">
+                                                    <rect key="frame" x="0.0" y="0.0" width="134" height="134"/>
+                                                    <color key="backgroundColor" red="1" green="1" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
+                                                </imageView>
+                                            </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
+                                        <constraints>
+                                            <constraint firstItem="ldk-IW-YMr" firstAttribute="leading" secondItem="Xuc-M1-hAN" secondAttribute="leading" id="5F0-12-zyo"/>
+                                            <constraint firstItem="ldk-IW-YMr" firstAttribute="top" secondItem="Xuc-M1-hAN" secondAttribute="top" id="NYe-z6-L0b"/>
+                                            <constraint firstAttribute="trailing" secondItem="ldk-IW-YMr" secondAttribute="trailing" id="gdq-j7-6d3"/>
+                                            <constraint firstItem="ldk-IW-YMr" firstAttribute="top" secondItem="Xuc-M1-hAN" secondAttribute="top" id="h9a-uk-Hac"/>
+                                            <constraint firstAttribute="bottom" secondItem="ldk-IW-YMr" secondAttribute="bottom" id="yQv-cV-hlC"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="imageView" destination="ldk-IW-YMr" id="I0l-2a-xXQ"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
@@ -90,6 +106,8 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="collectionView" destination="3rc-2F-VAH" id="8Na-Tw-fp9"/>
+                        <outlet property="flowLayout" destination="ELZ-em-LFF" id="u8U-Xg-Bfd"/>
                         <outlet property="mapView" destination="zSi-YT-EJc" id="SAB-Q0-zl4"/>
                     </connections>
                 </viewController>
