@@ -14,6 +14,7 @@
 		7A0091AE1C93C92D00757C49 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7A0091AC1C93C92D00757C49 /* LaunchScreen.storyboard */; };
 		7A0091B61C965DE700757C49 /* PhotoAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A0091B51C965DE700757C49 /* PhotoAlbumViewController.swift */; };
 		7A51DB711CA5A72400A6A1FA /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A51DB701CA5A72400A6A1FA /* PhotoCollectionViewCell.swift */; };
+		7A51DB731CA5B40C00A6A1FA /* FlickrClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A51DB721CA5B40C00A6A1FA /* FlickrClient.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		7A0091AF1C93C92D00757C49 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7A0091B51C965DE700757C49 /* PhotoAlbumViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAlbumViewController.swift; sourceTree = "<group>"; };
 		7A51DB701CA5A72400A6A1FA /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
+		7A51DB721CA5B40C00A6A1FA /* FlickrClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlickrClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 			children = (
 				7A0091A31C93C92D00757C49 /* AppDelegate.swift */,
 				7A0091A51C93C92D00757C49 /* MapViewController.swift */,
+				7A51DB721CA5B40C00A6A1FA /* FlickrClient.swift */,
 				7A0091B51C965DE700757C49 /* PhotoAlbumViewController.swift */,
 				7A0091A71C93C92D00757C49 /* Main.storyboard */,
 				7A0091AA1C93C92D00757C49 /* Assets.xcassets */,
@@ -145,6 +148,7 @@
 				7A0091A61C93C92D00757C49 /* MapViewController.swift in Sources */,
 				7A51DB711CA5A72400A6A1FA /* PhotoCollectionViewCell.swift in Sources */,
 				7A0091A41C93C92D00757C49 /* AppDelegate.swift in Sources */,
+				7A51DB731CA5B40C00A6A1FA /* FlickrClient.swift in Sources */,
 				7A0091B61C965DE700757C49 /* PhotoAlbumViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

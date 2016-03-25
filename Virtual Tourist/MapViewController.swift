@@ -54,6 +54,7 @@ class MapViewController: UIViewController {
             updatePinLocatin(gesture)
             activeAnnotion.coordinate = coordinate
             lookUpLocation(activeAnnotion)
+            downloadPhotos()
         default:
             break
         }
@@ -63,6 +64,11 @@ class MapViewController: UIViewController {
     func updatePinLocatin(gesture: UIGestureRecognizer) {
         pointPressed = gesture.locationInView(mapView)
         coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
+    }
+    
+    func downloadPhotos() {
+        
+        
     }
     
     ///method that determines a string-based location for the user's pin using reverse geocoding
