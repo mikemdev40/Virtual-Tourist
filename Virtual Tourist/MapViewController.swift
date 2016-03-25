@@ -11,26 +11,31 @@ import MapKit
 
 class MapViewController: UIViewController {
 
+    //MARK: Constants
     struct Constants {
         static let LongPressDuration = 0.5
         static let ShowPhotoAlbumSegue = "ShowPhotoAlbum"
     }
     
+    //MARK: Properties
     var activeAnnotion = MKPointAnnotation()
     var pointPressed = CGPoint()
     var coordinate = CLLocationCoordinate2D()
+    var savedRegionLoaded = false //variable which is set to true on initial loading of the user's saved map region, thus preventing unnecessary loading of a user's saved map region each time the user returns from the photo album controller
     
     //Set up the longpress gesture recognizer when the map view outlet gets set
     @IBOutlet weak var mapView: MKMapView! {
         didSet {
             mapView.delegate = self
-            let longPress = UILongPressGestureRecognizer(target: self, action: "dropPin:")
+            let longPress = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.dropPin(_:)))
             longPress.minimumPressDuration = Constants.LongPressDuration
             mapView.addGestureRecognizer(longPress)
         }
     }
     
-    //method that gets called when the long press gesture recognizer registers a long press; this function places an annotation view as soon as the long press begins, but immediately moves to the .changed state in which the location gets updated with the finger scroll (allowing the pin to move with the finger).
+    //MARK: Custom Methods
+    
+    ///method that gets called when the long press gesture recognizer registers a long press; this function places an annotation view as soon as the long press begins, but immediately moves to the .changed state in which the location gets updated with the finger scroll (allowing the pin to move with the finger).
     func dropPin(gesture: UIGestureRecognizer) {
         
         switch gesture.state {
@@ -54,12 +59,13 @@ class MapViewController: UIViewController {
         }
     }
     
-    //method that was created to reduce redundant code; the convertPoint doesn't actally convert a location (since the convertPoint is occurring on the same view that it is converting to! however, it is still needed because it performs the role of converting the pointPressed, which is a CGpoint, to a CLLocationCoordinate2D, which is the type required in order to add it to the map view.
+    ///method that was created to reduce redundant code; the convertPoint doesn't actally convert a location (since the convertPoint is occurring on the same view that it is converting to! however, it is still needed because it performs the role of converting the pointPressed, which is a CGpoint, to a CLLocationCoordinate2D, which is the type required in order to add it to the map view.
     func updatePinLocatin(gesture: UIGestureRecognizer) {
         pointPressed = gesture.locationInView(mapView)
         coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
     }
     
+    ///method that determines a string-based location for the user's pin using reverse geocoding
     func lookUpLocation(annotation: MKAnnotation) {  //i put the argument here as MKAnnotation rather than MKPointAnnotation just to keep the function more resusable! it just as easily have been MKPointAnnoation, in which case the downcast that happens in the completion closure below would not have been necessary
         let geocoder = CLGeocoder()
         
@@ -78,7 +84,8 @@ class MapViewController: UIViewController {
             }
         }
     }
-    //the method below is from http://stackoverflow.com/questions/33131213/regiondidchange-called-several-times-on-app-load-swift and is used to detect whether the map region was updated as a result of a user interacting with the map (i.e. through the user scrolling zooming); this method is needed for proper loading and saving the of most recent zoom/pan of the map, which gets saved when a user updates it and saved/loaded each time the app is run; this method is used within the "regionDidChangeAnimated" map delegate method, and is only needed for the initial loading of the map, because when the app loads, the map gets initially set and regionDidChangeAnimated method gets called in between viewWillAppear and viewDidAppear (and this initial location is unrelated to the loaded/saved location), but this initial setting is NOT a result of the user interacting with the map and so we do NOT want to save it as though it was a user-selected location for a save (and potentially immediately overwrite a user's saved location that has yet to even be loaded!); hence, in the regionDidChangeAnimated method, this method is invoked to check to see if the region was changed as a result of the USER moving it, which allows for the distinction between when the app "pre-sets" the map upon loading (which is NOT saved) and a user-generated region update which IS saved to NSUserDefaults
+    
+    //this method has been taken from http://stackoverflow.com/questions/33131213/regiondidchange-called-several-times-on-app-load-swift and is used to detect whether the map region was updated as a result of a user interacting with the map (i.e. through the user scrolling zooming); this method is needed for proper loading of the most recent zoom/pan of the map, which gets saved when a user updates it and saved/loaded each time the app is run; this method is used within the "regionDidChangeAnimated" map delegate method, and is only needed for the initial loading of the map, because when the app loads, the map gets initially set and regionDidChangeAnimated method gets called in between viewWillAppear and viewDidAppear (and this initial location is shifted off center from the loaded/saved location), but this initial setting is NOT a result of the user interacting with the map and so we do NOT want to save it as though it was a user-selected location for a save (and potentially immediately overwrite a user's saved location that has yet to even be loaded!); hence, in the regionDidChangeAnimated method, this method is invoked to check to see if the region was changed as a result of the USER moving it, which allows for the distinction between when the app "pre-sets" the map upon loading (which is NOT saved) and a user-generated region update which IS saved to NSUserDefaults
     func mapViewRegionDidChangeFromUserInteraction() -> Bool {
         let view = self.mapView.subviews[0]
         //  Look through gesture recognizers to determine whether this region change is from user interaction
@@ -93,10 +100,17 @@ class MapViewController: UIViewController {
         return false
     }
     
+    func removePinFromMap() {
+        print("EDIT MODE")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
      
         print("viewDidLoad")
+        
+        title = "Virtual Tourist"
+        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Edit, target: self, action: #selector(MapViewController.removePinFromMap))
         
     }
     
@@ -111,11 +125,14 @@ class MapViewController: UIViewController {
         super.viewDidAppear(animated)
         print("viewDidAppear")
         
-        if let savedRegion = NSUserDefaults.standardUserDefaults().objectForKey("savedMapRegion") as? [String: Double] {
-            let center = CLLocationCoordinate2D(latitude: savedRegion["mapRegionCenterLat"]!, longitude: savedRegion["mapRegionCenterLon"]!)
-            let span = MKCoordinateSpan(latitudeDelta: savedRegion["mapRegionSpanLatDelta"]!, longitudeDelta: savedRegion["mapRegionSpanLonDelta"]!)
-            print("loaded: \(center)")
-            mapView.region = MKCoordinateRegion(center: center, span: span)
+        if !savedRegionLoaded {
+            if let savedRegion = NSUserDefaults.standardUserDefaults().objectForKey("savedMapRegion") as? [String: Double] {
+                let center = CLLocationCoordinate2D(latitude: savedRegion["mapRegionCenterLat"]!, longitude: savedRegion["mapRegionCenterLon"]!)
+                let span = MKCoordinateSpan(latitudeDelta: savedRegion["mapRegionSpanLatDelta"]!, longitudeDelta: savedRegion["mapRegionSpanLonDelta"]!)
+                print("loaded: \(center)")
+                mapView.region = MKCoordinateRegion(center: center, span: span)
+            }
+            savedRegionLoaded = true
         }
     }
 }
@@ -128,7 +145,7 @@ extension MapViewController: MKMapViewDelegate {
         var annotationView = mapView.dequeueReusableAnnotationViewWithIdentifier("location") as? MKPinAnnotationView
         if annotationView == nil {
             annotationView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "location")
-            annotationView?.canShowCallout = true
+         //   annotationView?.canShowCallout = true
             annotationView?.pinTintColor = MKPinAnnotationView.redPinColor()
         } else {
             annotationView?.annotation = annotation
@@ -138,17 +155,20 @@ extension MapViewController: MKMapViewDelegate {
         return annotationView
     }
 
-//TODO: Issue to resolve; first tap on annotation registers the "didSelectAnnotationView" method, but only after the second tap does the grab and hold functionality take place
-    
-//    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
-//        performSegueWithIdentifier(Constants.ShowPhotoAlbumSegue, sender: view)
-//    }
-    
-    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
-        if newState == .Ending {
-            print("grabbed and moved to \(view.annotation?.coordinate)")
-        }
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        performSegueWithIdentifier(Constants.ShowPhotoAlbumSegue, sender: view)
+        
+        //the following sets the annotation back to "not selected" so it is possible to re-tap on it again after returning from the photo album view; this is necessary because when an annotation is first tapped, it's registered as "selected" and stays that way, so when trying to tap on it again after returning from the photo album view, it doesn't call the "didSelectAnnotationView" delegate method because technically it is already selected!  thank you stackoverflow for this insight and resolution: http://stackoverflow.com/questions/26620672/mapview-didselectannotationview-not-functioning-properly
+        mapView.deselectAnnotation(view.annotation, animated: true)
     }
+    
+    //TODO:  enable dragging; CODE BELOW NEVER RUNS BECAUSE A "GRAB" on the pin registers the didSelectAnnotationView rather than as a grab
+//    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
+//        print("did change state")
+//        if newState == .Ending {
+//            print("grabbed and moved to \(view.annotation?.coordinate)")
+//        }
+//    }
     
     func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         print("region did change to \(mapView.region.center)")
