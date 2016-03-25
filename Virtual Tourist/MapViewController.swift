@@ -44,7 +44,7 @@ class MapViewController: UIViewController {
             activeAnnotion = newAnnotation
             updatePinLocatin(gesture)
             newAnnotation.coordinate = coordinate
-            newAnnotation.title = "Test"
+            newAnnotation.title = nil
             mapView.addAnnotation(newAnnotation)
         case .Changed: //need to include .Changed so that the pin will move along with the finger drag
             updatePinLocatin(gesture)
@@ -104,6 +104,20 @@ class MapViewController: UIViewController {
         print("EDIT MODE")
     }
     
+    //MARK: View Controller Methods
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == Constants.ShowPhotoAlbumSegue {
+            if let destinationViewController = segue.destinationViewController as? PhotoAlbumViewController {
+                if let senderTitle = (sender as? MKAnnotationView)?.annotation?.title {
+                    destinationViewController.localityName = senderTitle
+                }
+            }
+        }
+    }
+    
+    //MARK: View Controller Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
      
@@ -111,7 +125,7 @@ class MapViewController: UIViewController {
         
         title = "Virtual Tourist"
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Edit, target: self, action: #selector(MapViewController.removePinFromMap))
-        
+        navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back", style: .Plain, target: nil, action: nil)  //enables a custom back button so that "Back" is shown instead of "Virtual Tourist" (could have done this in the storyboard also by adjusting the navigation item's back button value)
     }
     
     override func viewWillAppear(animated: Bool) {

@@ -10,12 +10,23 @@ import UIKit
 
 class PhotoAlbumViewController: UIViewController {
 
+    var localityName: String?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+                
     }
 
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        if localityName != nil {
+            title = localityName
+        } else {
+            title = "Photos"
+        }
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
