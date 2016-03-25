@@ -33,6 +33,8 @@ class MapViewController: UIViewController {
         }
     }
     
+    let flickrClient = FlickrClient.sharedInstance
+    
     //MARK: Custom Methods
     
     ///method that gets called when the long press gesture recognizer registers a long press; this function places an annotation view as soon as the long press begins, but immediately moves to the .changed state in which the location gets updated with the finger scroll (allowing the pin to move with the finger).
@@ -54,7 +56,7 @@ class MapViewController: UIViewController {
             updatePinLocatin(gesture)
             activeAnnotion.coordinate = coordinate
             lookUpLocation(activeAnnotion)
-            downloadPhotos()
+            getPhotosAtLocation(activeAnnotion.coordinate)
         default:
             break
         }
@@ -66,9 +68,9 @@ class MapViewController: UIViewController {
         coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
     }
     
-    func downloadPhotos() {
+    func getPhotosAtLocation(coordinate: CLLocationCoordinate2D) {
         
-        
+        flickrClient.executeGeoBasedFlickrSearch(coordinate.latitude, longitude: coordinate.longitude)
     }
     
     ///method that determines a string-based location for the user's pin using reverse geocoding
