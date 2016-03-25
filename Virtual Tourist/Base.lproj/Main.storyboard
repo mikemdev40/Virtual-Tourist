@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
         <!--Map View Controller-->
@@ -51,7 +52,42 @@
                     <view key="view" contentMode="scaleToFill" id="rbx-WM-iCK">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="zSi-YT-EJc">
+                                <rect key="frame" x="0.0" y="64" width="600" height="123.5"/>
+                            </mapView>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="3rc-2F-VAH">
+                                <rect key="frame" x="0.0" y="187.5" width="600" height="412.5"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="ELZ-em-LFF">
+                                    <size key="itemSize" width="50" height="50"/>
+                                    <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                    <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                    <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                </collectionViewFlowLayout>
+                                <cells>
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="Xuc-M1-hAN">
+                                        <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                                            <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                        </view>
+                                    </collectionViewCell>
+                                </cells>
+                            </collectionView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="3rc-2F-VAH" firstAttribute="leading" secondItem="rbx-WM-iCK" secondAttribute="leading" id="8My-XF-FDa"/>
+                            <constraint firstItem="zSi-YT-EJc" firstAttribute="height" secondItem="3rc-2F-VAH" secondAttribute="height" multiplier="0.3" id="DUC-O6-cLS"/>
+                            <constraint firstItem="zSi-YT-EJc" firstAttribute="leading" secondItem="rbx-WM-iCK" secondAttribute="leading" id="Dcp-HA-gej"/>
+                            <constraint firstAttribute="trailing" secondItem="zSi-YT-EJc" secondAttribute="trailing" id="NLH-EZ-zth"/>
+                            <constraint firstItem="zSi-YT-EJc" firstAttribute="top" secondItem="LsG-7X-zCJ" secondAttribute="bottom" id="PFP-SV-VU4"/>
+                            <constraint firstItem="3rc-2F-VAH" firstAttribute="top" secondItem="zSi-YT-EJc" secondAttribute="bottom" id="Zqk-ln-wPR"/>
+                            <constraint firstItem="LZ0-IW-kZA" firstAttribute="top" secondItem="3rc-2F-VAH" secondAttribute="bottom" id="ckY-yq-oG1"/>
+                            <constraint firstAttribute="trailing" secondItem="3rc-2F-VAH" secondAttribute="trailing" id="jyk-Yc-UJI"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="poK-eW-tpC" userLabel="First Responder" sceneMemberID="firstResponder"/>
