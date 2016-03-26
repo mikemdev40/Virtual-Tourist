@@ -18,7 +18,7 @@ class MapViewController: UIViewController {
     }
     
     //MARK: Properties
-    var activeAnnotion = MKPointAnnotation()
+    var activeAnnotion: DroppedAnnotation!
     var pointPressed = CGPoint()
     var coordinate = CLLocationCoordinate2D()
     var savedRegionLoaded = false //variable which is set to true on initial loading of the user's saved map region, thus preventing unnecessary loading of a user's saved map region each time the user returns from the photo album controller
@@ -42,7 +42,8 @@ class MapViewController: UIViewController {
         
         switch gesture.state {
         case .Began:
-            let newAnnotation = MKPointAnnotation()
+            let coordinate = mapView.convertPoint(gesture.locationInView(mapView), toCoordinateFromView: mapView)
+            let newAnnotation = DroppedAnnotation(coordinate: coordinate, title: nil, subtitle: nil)
             activeAnnotion = newAnnotation
             updatePinLocatin(gesture)
             newAnnotation.coordinate = coordinate
@@ -77,6 +78,8 @@ class MapViewController: UIViewController {
                 }
                 return
             }
+            
+            print(success)
             
            // savePhotosToDisk(photoArray)
 
