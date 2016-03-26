@@ -70,7 +70,11 @@ class MapViewController: UIViewController {
     
     func getPhotosAtLocation(coordinate: CLLocationCoordinate2D) {
         
-        flickrClient.executeGeoBasedFlickrSearch(coordinate.latitude, longitude: coordinate.longitude)
+        flickrClient.executeGeoBasedFlickrSearch(coordinate.latitude, longitude: coordinate.longitude) { (success, photoArray, error) in
+            
+            print(photoArray?.count)
+            
+        }
     }
     
     ///method that determines a string-based location for the user's pin using reverse geocoding
