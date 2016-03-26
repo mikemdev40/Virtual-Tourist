@@ -13,7 +13,7 @@ class PhotoAlbumViewController: UIViewController {
 
     struct Constants {
         static let SpanDeltaLongitude: CLLocationDegrees = 0.5
-        static let CellVerticalSpacing: CGFloat = 2
+        static let CellVerticalSpacing: CGFloat = 4
     }
     
     var SpanDeltaLatitude: CLLocationDegrees {
@@ -59,8 +59,6 @@ class PhotoAlbumViewController: UIViewController {
             numWide = 4
         }
         
-        print(numWide)
-        
         //sets the cell width to be dependent upon the number of cells that will be displayed in each row, as determined directly above
         cellWidth = collectionView.frame.width / numWide
         
@@ -69,8 +67,6 @@ class PhotoAlbumViewController: UIViewController {
         flowLayout.itemSize.width = cellWidth
         flowLayout.itemSize.height = cellWidth
         flowLayout.minimumInteritemSpacing = Constants.CellVerticalSpacing
-        
-        print(cellWidth)
         
         //calculates the actual vertical spacing between cells, accounting for the additional vertical space that was subtracted from the cell width (e.g. if there are 3 cells, there are only 2 vertical spaces, not 3); then by setting the line spacing to be equal to this "actual" value, the vertical and horizontal distances between cells should be exact (or as close to exact as possible)
         let actualCellVerticalSpacing: CGFloat = (collectionView.frame.width - (numWide * cellWidth))/(numWide - 1)
@@ -127,7 +123,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
     //required
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        return 21
+        return 18
         //UDPATE THIS WITH NSFETCH INFO
     }
     
