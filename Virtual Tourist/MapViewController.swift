@@ -71,9 +71,15 @@ class MapViewController: UIViewController {
     func getPhotosAtLocation(coordinate: CLLocationCoordinate2D) {
         
         flickrClient.executeGeoBasedFlickrSearch(coordinate.latitude, longitude: coordinate.longitude) { (success, photoArray, error) in
+            guard error == nil else {
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.callAlert("Error", message: error!, alertHandler: nil, presentationCompletionHandler: nil)
+                }
+                return
+            }
             
-            print(photoArray?.count)
-            
+           // savePhotosToDisk(photoArray)
+
         }
     }
     
@@ -95,6 +101,12 @@ class MapViewController: UIViewController {
                 }
             }
         }
+    }
+    
+    func callAlert(title: String, message: String, alertHandler: ((UIAlertAction) -> Void)?, presentationCompletionHandler: (() -> Void)?) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: .Default, handler: alertHandler))
+        presentViewController(alertController, animated: true, completion: presentationCompletionHandler)
     }
     
     //this method has been taken from http://stackoverflow.com/questions/33131213/regiondidchange-called-several-times-on-app-load-swift and is used to detect whether the map region was updated as a result of a user interacting with the map (i.e. through the user scrolling zooming); this method is needed for proper loading of the most recent zoom/pan of the map, which gets saved when a user updates it and saved/loaded each time the app is run; this method is used within the "regionDidChangeAnimated" map delegate method, and is only needed for the initial loading of the map, because when the app loads, the map gets initially set and regionDidChangeAnimated method gets called in between viewWillAppear and viewDidAppear (and this initial location is shifted off center from the loaded/saved location), but this initial setting is NOT a result of the user interacting with the map and so we do NOT want to save it as though it was a user-selected location for a save (and potentially immediately overwrite a user's saved location that has yet to even be loaded!); hence, in the regionDidChangeAnimated method, this method is invoked to check to see if the region was changed as a result of the USER moving it, which allows for the distinction between when the app "pre-sets" the map upon loading (which is NOT saved) and a user-generated region update which IS saved to NSUserDefaults
