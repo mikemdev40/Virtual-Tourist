@@ -18,7 +18,7 @@ class MapViewController: UIViewController {
     }
     
     //MARK: Properties
-    var activeAnnotion: DroppedAnnotation!
+    var activeAnnotion: PinAnnotation!
     var pointPressed = CGPoint()
     var coordinate = CLLocationCoordinate2D()
     var savedRegionLoaded = false //variable which is set to true on initial loading of the user's saved map region, thus preventing unnecessary loading of a user's saved map region each time the user returns from the photo album controller
@@ -43,19 +43,22 @@ class MapViewController: UIViewController {
         switch gesture.state {
         case .Began:
             let coordinate = mapView.convertPoint(gesture.locationInView(mapView), toCoordinateFromView: mapView)
-            let newAnnotation = DroppedAnnotation(coordinate: coordinate, title: nil, subtitle: nil)
+            let newAnnotation = PinAnnotation(latitude: coordinate.latitude, longitude: coordinate.longitude, title: nil, subtitle: nil)
             activeAnnotion = newAnnotation
             updatePinLocatin(gesture)
-            newAnnotation.coordinate = coordinate
-            newAnnotation.title = nil
+            //newAnnotation.coordinate = coordinate
+            newAnnotation.latitude = coordinate.latitude
+            newAnnotation.longitude = coordinate.longitude
             mapView.addAnnotation(newAnnotation)
         case .Changed: //need to include .Changed so that the pin will move along with the finger drag
             updatePinLocatin(gesture)
-            activeAnnotion.coordinate = coordinate
+            //activeAnnotion.coordinate = coordinate
+            activeAnnotion.latitude = coordinate.latitude
+            activeAnnotion.latitude = coordinate.longitude
             print("moved to \(activeAnnotion.coordinate)")
         case .Ended:
             updatePinLocatin(gesture)
-            activeAnnotion.coordinate = coordinate
+            //activeAnnotion.coordinate = coordinate
             lookUpLocation(activeAnnotion)
             getPhotosAtLocation(activeAnnotion.coordinate)
         default:
