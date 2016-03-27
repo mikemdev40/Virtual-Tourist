@@ -27,6 +27,7 @@ class Photo: NSManagedObject {
     
     var photoImage: UIImage? {
         get {
+            print("photoImage accessed")
             return ImageFileManager.sharedInstance.retrieveImageFromDisk(photoURLonDisk)
         }
         set {

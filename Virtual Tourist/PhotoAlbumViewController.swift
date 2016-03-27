@@ -185,6 +185,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
                     dispatch_async(dispatch_get_main_queue()) {
                         print("photo DOWNLOADED")
                         cell.imageView.image = photo
+                        photoObjectToDisplay.photoImage = photo
                     }
                 }
             })

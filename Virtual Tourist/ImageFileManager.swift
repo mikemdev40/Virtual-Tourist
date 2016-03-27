@@ -28,6 +28,7 @@ class ImageFileManager {
         guard let photo = photoToSave, let photoURL = photoURLonDisk else {
             return
         }
+        print("save photo to disk")
         
         imageCache.setObject(photo, forKey: photoURL)
         
@@ -37,7 +38,6 @@ class ImageFileManager {
     }
     
     func retrieveImageFromDisk(photoURL: String?) -> UIImage? {
-        
         if photoURL == nil {
             print("photourl nil")
             return nil
@@ -50,7 +50,10 @@ class ImageFileManager {
         
         if let photoData = NSData(contentsOfFile: photoURL!) {
             print("nsdata")
-            return UIImage(data: photoData)
+            if let photo = UIImage(data: photoData) {
+                imageCache.setObject(photo, forKey: photoURL!)  //saves it to cache once it is loaded from the hard drive the first time
+                return photo
+            }
         }
         
         print("none")
