@@ -168,11 +168,12 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         cell.layer.cornerRadius = 5
         cell.imageView.clipsToBounds = true
         cell.imageView.contentMode = .ScaleAspectFill
+       
         
         let photoObjectToDisplay = fetchedResultsContoller.objectAtIndexPath(indexPath) as! Photo
        
-        if photoObjectToDisplay.photoImage != nil {
-            cell.imageView.image = photoObjectToDisplay.photoImage
+        if let photoImage = photoObjectToDisplay.photoImage {
+            cell.imageView.image = photoImage
             print("photo loaded")
         } else {
             FlickrClient.sharedInstance.getImageForUrl(photoObjectToDisplay.flickrURL, completionHandler: { (data, error) in
@@ -190,6 +191,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
                 }
             })
         }
+        
         return cell
     }
     

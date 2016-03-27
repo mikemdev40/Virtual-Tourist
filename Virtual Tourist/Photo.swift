@@ -12,8 +12,6 @@ import UIKit
 
 //in setting up this class in the data model:
 // - necessary to have the "ordered" box checked, so that it was possible to reference specific photos within the array (without "ordered" checked, calling something like "annotation.photos.first" causes a crash!  with ordering, it was possible to call .first)
-// - photoID and flickrURL are required, storedURL is optional and initially set to nil (gets set later); these properties in the data model also reflect this
-
 
 class Photo: NSManagedObject {
     
@@ -21,10 +19,12 @@ class Photo: NSManagedObject {
     @NSManaged var flickrURL: String
     @NSManaged var pin: PinAnnotation?
 
+    //computed property that returns the URL of the photo image file on disk (and in the cache); the URL is comprised of the documents directory and a unique file name which is based upoon the photoID (which is a unique identifier returned from Flickr)
     var photoURLonDisk: String? {
         return ImageFileManager.sharedInstance.getURLforFileOnDisk(photoID)
     }
     
+    //computed property that, when accessed during collection view cell configuration, returns the saved value from the disk or returns nil; if this property returns nil when the cell calls for it, the cell congifuration then starts the downloading of the image which is then followed by setting this property equal to the freshly downladed image, thus invoking the setter observer below and the saving of the image to disk (and cache), which then leads to subsequent "get" calls to this property to return a non-nil image
     var photoImage: UIImage? {
         get {
             print("photoImage accessed")

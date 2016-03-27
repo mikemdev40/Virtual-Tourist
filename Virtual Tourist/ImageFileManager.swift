@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 
+//class that manages the saving and reading of photo images from the file system and cimage cache
 class ImageFileManager {
     
     static let sharedInstance = ImageFileManager()
