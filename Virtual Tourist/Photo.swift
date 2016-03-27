@@ -18,9 +18,17 @@ class Photo: NSManagedObject {
     
     @NSManaged var photoID: String
     @NSManaged var flickrURL: String
-    @NSManaged var storedURL: String?
     @NSManaged var pin: PinAnnotation?
 
+    var photoURLonDisk: String? {
+        let manager = NSFileManager.defaultManager()
+        if let documentsPath = manager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first {
+            let URL = documentsPath.URLByAppendingPathComponent("\(photoID).jpg")
+            return URL.path
+        }
+        return nil
+    }
+    
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
@@ -32,4 +40,5 @@ class Photo: NSManagedObject {
         self.photoID = photoID
         self.flickrURL = flickrURL
     }
+
 }
