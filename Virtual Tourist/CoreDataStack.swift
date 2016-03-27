@@ -46,9 +46,10 @@ class CoreDataStack {
     func savePhotosToPin(photoDataToSave: [[String : AnyObject]], pinToSaveTo: PinAnnotation) {
         
         for photo in photoDataToSave {
-            if let imgURL = photo["url_m"] as? String {
-                let newPhoto = Photo(photoURL: imgURL, context: managedObjectContect)
+            if let imgURL = photo["url_m"] as? String, let photoID = photo["id"] as? String {
+                let newPhoto = Photo(photoID: photoID, flickrURL: imgURL, context: managedObjectContect)
                 newPhoto.pin = pinToSaveTo
+                print(newPhoto.photoID)
             }
         }
         do {
@@ -57,6 +58,10 @@ class CoreDataStack {
         } catch {
             print("error saving photos")
         }
+    }
+    
+    func savePhotoToDisk() {
+        
     }
     
     private init() {}

@@ -96,6 +96,20 @@ class FlickrClient {
         task.resume()
     }
     
+    func getImageForUrl(url: String) {
+        
+        guard let imageNSURL = NSURL(string: url) else {
+            return
+        }
+        
+        let session = NSURLSession.sharedSession()
+        let request = NSURLRequest(URL: imageNSURL)
+        let task = session.dataTaskWithRequest(request) { (data, response, error) in
+            
+            
+        }
+    }
+    
     ///class helper method that takes JSON NSData and returns an optional NSDictionary (nil if there was an error converting it from JSON to a dictionary); the method utilizes NSJSONSerialization and related methods; this method is used many times throughout this class to convert JSON data to a readable format
     private class func parseData(dataToParse: NSData) -> NSDictionary? {
         let JSONData: AnyObject?

@@ -12,7 +12,7 @@ import MapKit
 class PhotoAlbumViewController: UIViewController {
 
     struct Constants {
-        static let SpanDeltaLongitude: CLLocationDegrees = 0.5
+        static let SpanDeltaLongitude: CLLocationDegrees = 2
         static let CellVerticalSpacing: CGFloat = 4
     }
     
@@ -127,7 +127,6 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         cell.imageView.contentMode = .ScaleAspectFill
         
         //sets the data of each cell using the shared saved memes array; note that the imageview of the cell is being updated to the memed image as retrieved using the "getImage" method on the meme object using the "Memed" ImageType (this method and type are both defined as part of the MemeObject class), as well as the global "getDateFromMeme" function which is defined in the functions.swift file (and also used by the table view)
-       // let memeCollection = Memes.sharedInstance.savedMemes
        // cell.memeImage.image = memeCollection[indexPath.row].getImage(MemeObject.ImageType.Memed)
        // cell.memeLabel.text = "Shared " + getDateFromMeme(memeCollection[indexPath.row])
         

@@ -11,17 +11,20 @@ import CoreData
 
 class Photo: NSManagedObject {
     
-    @NSManaged var photoURL: String
+    @NSManaged var photoID: String
+    @NSManaged var flickrURL: String
+    @NSManaged var storedURL: String?
     @NSManaged var pin: PinAnnotation?
 
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
     
-    init(photoURL: String, context: NSManagedObjectContext) {
+    init(photoID: String, flickrURL: String, context: NSManagedObjectContext) {
         let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)!
         super.init(entity: entity, insertIntoManagedObjectContext: context)
         
-        self.photoURL = photoURL
+        self.photoID = photoID
+        self.flickrURL = flickrURL
     }
 }
