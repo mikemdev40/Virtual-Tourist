@@ -82,7 +82,16 @@ class PhotoAlbumViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-                
+    
+    
+        print(annotationToShow.photos?.count)
+        if let ann = annotationToShow.photos?.first {
+            print(ann.photoID)
+            print(ann.flickrURL)
+            print(ann.storedURL)
+        } else {
+            print("empty")
+        }
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -101,7 +110,6 @@ class PhotoAlbumViewController: UIViewController {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
-        print(annotationToShow.photos?.count)
     }
 }
 

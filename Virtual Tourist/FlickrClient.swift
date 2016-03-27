@@ -96,7 +96,7 @@ class FlickrClient {
         task.resume()
     }
     
-    func getImageForUrl(url: String) {
+    func getImageForUrl(url: String, completionHandler: (data: NSData?, error: String?) -> Void) {
         
         guard let imageNSURL = NSURL(string: url) else {
             return
@@ -106,8 +106,25 @@ class FlickrClient {
         let request = NSURLRequest(URL: imageNSURL)
         let task = session.dataTaskWithRequest(request) { (data, response, error) in
             
+            guard error == nil else {
+                completionHandler(data: nil, error: error?.localizedDescription)
+                return
+            }
+            
+            guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
+                completionHandler(data: nil, error: "Unsuccessful status code")
+                return
+            }
+            
+            guard let data = data else {
+                completionHandler(data: nil, error: "There was an error getting the data.")
+                return
+            }
+            
+            completionHandler(data: data, error: nil)
             
         }
+        task.resume()
     }
     
     ///class helper method that takes JSON NSData and returns an optional NSDictionary (nil if there was an error converting it from JSON to a dictionary); the method utilizes NSJSONSerialization and related methods; this method is used many times throughout this class to convert JSON data to a readable format

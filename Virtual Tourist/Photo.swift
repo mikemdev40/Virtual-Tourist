@@ -9,6 +9,11 @@
 import Foundation
 import CoreData
 
+//in setting up this class in the data model:
+// - necessary to have the "ordered" box checked, so that it was possible to reference specific photos within the array (without "ordered" checked, calling something like "annotation.photos.first" causes a crash!  with ordering, it was possible to call .first)
+// - photoID and flickrURL are required, storedURL is optional and initially set to nil (gets set later); these properties in the data model also reflect this
+
+
 class Photo: NSManagedObject {
     
     @NSManaged var photoID: String

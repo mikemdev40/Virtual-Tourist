@@ -157,6 +157,7 @@ class MapViewController: UIViewController {
         if segue.identifier == Constants.ShowPhotoAlbumSegue {
             if let destinationViewController = segue.destinationViewController as? PhotoAlbumViewController, let senderAnnotationView = sender as? MKAnnotationView {
                 if let annotation = senderAnnotationView.annotation as? PinAnnotation {
+                    print("loaded annotation")
                     destinationViewController.annotationToShow = annotation
                     if let title = annotation.title {
                         destinationViewController.localityName = title

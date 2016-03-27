@@ -49,7 +49,6 @@ class CoreDataStack {
             if let imgURL = photo["url_m"] as? String, let photoID = photo["id"] as? String {
                 let newPhoto = Photo(photoID: photoID, flickrURL: imgURL, context: managedObjectContect)
                 newPhoto.pin = pinToSaveTo
-                print(newPhoto.photoID)
             }
         }
         do {
@@ -61,6 +60,10 @@ class CoreDataStack {
     }
     
     func savePhotoToDisk() {
+        
+    }
+    
+    func deletePhoto() {
         
     }
     

@@ -10,7 +10,7 @@ import Foundation
 import MapKit
 import CoreData
 
-class PinAnnotation: NSManagedObject, MKAnnotation {  //when "upgrading" this class to an NSManaged class, it was neccessary to remove the inheritance from NSObject (which was initially added to allow for MKAnnotation protocol conformance)
+class PinAnnotation: NSManagedObject, MKAnnotation {  //when "upgrading" this class to an NSManaged class, it was neccessary to remove the inheritance from NSObject (which was initially added to allow for MKAnnotation protocol conformance); i wanted to have this class conform to the MKAnnotation protocol so that these objects, when returned from core data, could be used immediately as annotations on the map (rather than having to create an intermediate set of annotations from objects of a non-MKannotation conforming class).
     
     @NSManaged var latitude: Double
     @NSManaged var longitude: Double
@@ -18,7 +18,7 @@ class PinAnnotation: NSManagedObject, MKAnnotation {  //when "upgrading" this cl
     @NSManaged var subtitle: String?
     @NSManaged var photos: [Photo]?
     
-    //coordinate is required for the MKAnnotation protocol
+    //coordinate is required for the MKAnnotation protocol so it was included, but it needed to be a computer property because CLLocationCoordinate2D was not a storable type in core data; however, Double is, so it was possible to store latitude and longitude and then computer the coordinate from those values
     var coordinate: CLLocationCoordinate2D {
         return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
