@@ -43,24 +43,35 @@ class CoreDataStack {
         return context
     }()
     
-    func savePhotosToPin(photoDataToSave: [[String : AnyObject]], pinToSaveTo: PinAnnotation) {
+    func savePhotosToPin(photoDataToSave: [[String : AnyObject]], pinToSaveTo: PinAnnotation, maxNumberToSave: Int) {
         
-        for photo in photoDataToSave {
-            if let imgURL = photo["url_m"] as? String, let photoID = photo["id"] as? String {
-                let newPhoto = Photo(photoID: photoID, flickrURL: imgURL, context: managedObjectContect)
-                newPhoto.pin = pinToSaveTo
+        if photoDataToSave.count > maxNumberToSave {
+            for photoNum in 0...(maxNumberToSave - 1) {
+                if let imgURL = photoDataToSave[photoNum]["url_m"] as? String, let photoID = photoDataToSave[photoNum]["id"] as? String {
+                    let newPhoto = Photo(photoID: photoID, flickrURL: imgURL, context: managedObjectContect)
+                    newPhoto.pin = pinToSaveTo
+                    print("max hit: \(imgURL)")
+                }
+            }
+        } else {
+            for photo in photoDataToSave {
+                if let imgURL = photo["url_m"] as? String, let photoID = photo["id"] as? String {
+                    let newPhoto = Photo(photoID: photoID, flickrURL: imgURL, context: managedObjectContect)
+                    newPhoto.pin = pinToSaveTo
+                    print("all used: \(imgURL)")
+                }
             }
         }
+
         do {
             try managedObjectContect.save()
-            print("\(photoDataToSave.count) photos saved")
         } catch {
             print("error saving photos")
         }
     }
     
     func savePhotoToDisk() {
-        
+         
     }
     
     func deletePhoto() {

@@ -8,6 +8,7 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class PhotoAlbumViewController: UIViewController {
 
@@ -39,6 +40,19 @@ class PhotoAlbumViewController: UIViewController {
     
     //connecting to the collection view's flow layout object enables its customization
     @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
+    
+    var sharedContext: NSManagedObjectContext {
+        return CoreDataStack.sharedInstance.managedObjectContect
+    }
+
+    lazy var fetchedResultsContoller: NSFetchedResultsController = {
+        let fetchRequest = NSFetchRequest(entityName: "Photo")
+        fetchRequest.predicate = NSPredicate(format: "pin == %@", self.annotationToShow)
+        fetchRequest.sortDescriptors = []  //without at least something in the sortDescriptors, a crash will result (per the documentation: a fetch request "must contain at least one sort descriptor to order the results."
+        
+        let contoller = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.sharedContext, sectionNameKeyPath: nil, cacheName: nil)
+        return contoller
+    }()
     
     ///this method determines the cell layout (and does do differently depending on whether the device is in portrait or landscape mode) and is called when "viewDidLayoutSubviews" is called (which happens multiple times throughout the view controller's lifecycle, as well as when the device is phycially rotated)
     func layoutCells() {
@@ -92,6 +106,12 @@ class PhotoAlbumViewController: UIViewController {
         } else {
             print("empty")
         }
+        
+        fetchedResultsContoller.delegate = self
+        
+        do {
+            try fetchedResultsContoller.performFetch()
+        } catch {}
     }
 
     override func viewWillAppear(animated: Bool) {
@@ -113,15 +133,20 @@ class PhotoAlbumViewController: UIViewController {
     }
 }
 
+//MARK: COLLECTION VIEW DELEGATE & DATASOURCE METHODS
+
 extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
-    //MARK: Collection View DataSource Methods
+    //Collection View DataSource Methods
     
     //required
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        return 18
-        //UDPATE THIS WITH NSFETCH INFO
+        if let section = fetchedResultsContoller.sections?[section] {
+            print("objects: \(section.numberOfObjects)")
+            return section.numberOfObjects
+        } else {
+            return 0
+        }
     }
     
     //required
@@ -142,14 +167,43 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         
     }
     
-    //MARK: Collection View Delegate Methods
+    func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+        return fetchedResultsContoller.sections?.count ?? 1
+    }
+    
+    //Collection View Delegate Methods
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         print("MARK FOR DELETE!")
     }
 }
 
+//MARK: FETCHEDCONTROLLER DELEGATE METHODS
+
+extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
+    
+    func controllerWillChangeContent(controller: NSFetchedResultsController) {
+        
+    }
+    
+    func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
+        
+    }
+    
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+        
+    }
+    
+    func controllerDidChangeContent(controller: NSFetchedResultsController) {
+        
+    }
+    
+}
+
+//MARK: MAPVIEW DELEGATE METHODS
+
 extension PhotoAlbumViewController: MKMapViewDelegate {
+    
     func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
         let pin = MKPinAnnotationView()
         pin.pinTintColor = UIColor.redColor()

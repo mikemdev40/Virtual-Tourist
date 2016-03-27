@@ -16,6 +16,7 @@ class MapViewController: UIViewController {
     struct Constants {
         static let LongPressDuration = 0.5
         static let ShowPhotoAlbumSegue = "ShowPhotoAlbum"
+        static let MaxNumberOfPhotosToSavePerPin = 15
     }
     
     //MARK: Properties
@@ -35,7 +36,10 @@ class MapViewController: UIViewController {
     }
     
     let flickrClient = FlickrClient.sharedInstance
-    var sharedContext: NSManagedObjectContext!
+
+    var sharedContext: NSManagedObjectContext {
+        return CoreDataStack.sharedInstance.managedObjectContect
+    }
     
     //MARK: Custom Methods
     
@@ -92,7 +96,7 @@ class MapViewController: UIViewController {
                 return
             }
         
-            CoreDataStack.sharedInstance.savePhotosToPin(photoArray, pinToSaveTo: self.activeAnnotation)
+            CoreDataStack.sharedInstance.savePhotosToPin(photoArray, pinToSaveTo: self.activeAnnotation, maxNumberToSave: Constants.MaxNumberOfPhotosToSavePerPin)
         }
     }
     
@@ -171,8 +175,6 @@ class MapViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        sharedContext = CoreDataStack.sharedInstance.managedObjectContect
         
         title = "Virtual Tourist"
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Edit, target: self, action: #selector(MapViewController.removePinFromMap))
