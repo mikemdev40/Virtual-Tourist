@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreData
+import UIKit
 
 //in setting up this class in the data model:
 // - necessary to have the "ordered" box checked, so that it was possible to reference specific photos within the array (without "ordered" checked, calling something like "annotation.photos.first" causes a crash!  with ordering, it was possible to call .first)
@@ -21,12 +22,16 @@ class Photo: NSManagedObject {
     @NSManaged var pin: PinAnnotation?
 
     var photoURLonDisk: String? {
-        let manager = NSFileManager.defaultManager()
-        if let documentsPath = manager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first {
-            let URL = documentsPath.URLByAppendingPathComponent("\(photoID).jpg")
-            return URL.path
+        return ImageFileManager.sharedInstance.getURLforFileOnDisk(photoID)
+    }
+    
+    var photoImage: UIImage? {
+        get {
+            return ImageFileManager.sharedInstance.retrieveImageFromDisk(photoURLonDisk)
         }
-        return nil
+        set {
+            ImageFileManager.sharedInstance.saveImageToDisk(newValue, photoURLonDisk: photoURLonDisk)
+        }
     }
     
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
@@ -40,5 +45,4 @@ class Photo: NSManagedObject {
         self.photoID = photoID
         self.flickrURL = flickrURL
     }
-
 }

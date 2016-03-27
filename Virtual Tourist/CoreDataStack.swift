@@ -70,13 +70,5 @@ class CoreDataStack {
         }
     }
     
-    func savePhotoToDisk() {
-         
-    }
-    
-    func deletePhoto() {
-        
-    }
-    
     private init() {}
 }

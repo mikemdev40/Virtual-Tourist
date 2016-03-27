@@ -90,9 +90,19 @@ class PhotoAlbumViewController: UIViewController {
         flowLayout.invalidateLayout()
     }
     
+    func callAlert(title: String, message: String, alertHandler: ((UIAlertAction) -> Void)?, presentationCompletionHandler: (() -> Void)?) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: .Default, handler: alertHandler))
+        presentViewController(alertController, animated: true, completion: presentationCompletionHandler)
+    }
+    
+    //MARK: VIEW CONTROLLER METHODS
+    
     override func viewDidLayoutSubviews() {
         layoutCells()
     }
+    
+    //MARK: VIEW CONTROLLER LIFECYCLE
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -161,14 +171,25 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         
         let photoObjectToDisplay = fetchedResultsContoller.objectAtIndexPath(indexPath) as! Photo
        
-//        if photoObjectToDisplay == nil {
-//            
-//            
-//        }
-        
-        print(photoObjectToDisplay.photoURLonDisk)
+        if photoObjectToDisplay.photoImage != nil {
+            cell.imageView.image = photoObjectToDisplay.photoImage
+            print("photo loaded")
+        } else {
+            FlickrClient.sharedInstance.getImageForUrl(photoObjectToDisplay.flickrURL, completionHandler: { (data, error) in
+                guard error == nil else {
+                    return
+                }
+                
+                if let photoData = data {
+                    let photo = UIImage(data: photoData)
+                    dispatch_async(dispatch_get_main_queue()) {
+                        print("photo DOWNLOADED")
+                        cell.imageView.image = photo
+                    }
+                }
+            })
+        }
         return cell
-        
     }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
