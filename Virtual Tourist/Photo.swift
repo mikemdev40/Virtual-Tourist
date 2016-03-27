@@ -9,10 +9,18 @@
 import Foundation
 import CoreData
 
-class Photo {
-    var photoURL: String
+class Photo: NSManagedObject {
     
-    init(photoURL: String) {
+    @NSManaged var photoURL: String
+
+    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+        super.init(entity: entity, insertIntoManagedObjectContext: context)
+    }
+    
+    init(photoURL: String, context: NSManagedObjectContext) {
+        let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)!
+        super.init(entity: entity, insertIntoManagedObjectContext: context)
+        
         self.photoURL = photoURL
     }
 }

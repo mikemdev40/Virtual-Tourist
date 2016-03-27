@@ -43,5 +43,9 @@ class CoreDataStack {
         return context
     }()
     
+    func savePhotosToDisk(photoDataToSave: [[String : AnyObject]]) {
+        print("save photo data to disk")
+    }
+    
     private init() {}
 }

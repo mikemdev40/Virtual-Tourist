@@ -45,22 +45,23 @@ class MapViewController: UIViewController {
         switch gesture.state {
         case .Began:
             let coordinate = mapView.convertPoint(gesture.locationInView(mapView), toCoordinateFromView: mapView)
-            let newAnnotation = PinAnnotation(latitude: coordinate.latitude, longitude: coordinate.longitude, title: nil, subtitle: nil)
+            let newAnnotation = PinAnnotation(latitude: coordinate.latitude, longitude: coordinate.longitude, title: nil, subtitle: nil, context: sharedContext)
             activeAnnotion = newAnnotation
             updatePinLocatin(gesture)
-            //newAnnotation.coordinate = coordinate
             newAnnotation.latitude = coordinate.latitude
             newAnnotation.longitude = coordinate.longitude
             mapView.addAnnotation(newAnnotation)
         case .Changed: //need to include .Changed so that the pin will move along with the finger drag
             updatePinLocatin(gesture)
-            //activeAnnotion.coordinate = coordinate
             activeAnnotion.latitude = coordinate.latitude
             activeAnnotion.latitude = coordinate.longitude
-            print("moved to \(activeAnnotion.coordinate)")
         case .Ended:
             updatePinLocatin(gesture)
-            //activeAnnotion.coordinate = coordinate
+            do {
+                try sharedContext.save()
+            } catch {
+                print("error saving")
+            }
             lookUpLocation(activeAnnotion)
             getPhotosAtLocation(activeAnnotion.coordinate)
         default:
@@ -84,10 +85,16 @@ class MapViewController: UIViewController {
                 return
             }
             
-            print(success)
+            guard let photoArray = photoArray else {
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.callAlert("Error", message: "No photos in the photo array", alertHandler: nil, presentationCompletionHandler: nil)
+                }
+                return
+            }
             
-           // savePhotosToDisk(photoArray)
-
+            print(photoArray)
+        
+            CoreDataStack.sharedInstance.savePhotosToDisk(photoArray)
         }
     }
     
@@ -124,12 +131,22 @@ class MapViewController: UIViewController {
         if let gestureRecognizers = view.gestureRecognizers {
             for recognizer in gestureRecognizers {
                 if (recognizer.state == UIGestureRecognizerState.Began || recognizer.state == UIGestureRecognizerState.Ended) {
-                    print("user interaction")
                     return true
                 }
             }
         }
         return false
+    }
+    
+    func loadAllPins() -> [PinAnnotation] {
+        let fetchRequest = NSFetchRequest(entityName: "Pin")
+        
+        do {
+            return try sharedContext.executeFetchRequest(fetchRequest) as! [PinAnnotation]
+        } catch {
+            print("error loading")
+            return [PinAnnotation]()
+        }
     }
     
     func removePinFromMap() {
@@ -180,6 +197,9 @@ class MapViewController: UIViewController {
             }
             savedRegionLoaded = true
         }
+        
+        let annotationsToLoad = loadAllPins()
+        mapView.addAnnotations(annotationsToLoad)
     }
 }
 
