@@ -12,6 +12,7 @@ import CoreData
 class Photo: NSManagedObject {
     
     @NSManaged var photoURL: String
+    @NSManaged var pin: PinAnnotation?
 
     override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)

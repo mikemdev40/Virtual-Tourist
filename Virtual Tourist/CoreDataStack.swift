@@ -43,8 +43,20 @@ class CoreDataStack {
         return context
     }()
     
-    func savePhotosToDisk(photoDataToSave: [[String : AnyObject]]) {
-        print("save photo data to disk")
+    func savePhotosToPin(photoDataToSave: [[String : AnyObject]], pinToSaveTo: PinAnnotation) {
+        
+        for photo in photoDataToSave {
+            if let imgURL = photo["url_m"] as? String {
+                let newPhoto = Photo(photoURL: imgURL, context: managedObjectContect)
+                newPhoto.pin = pinToSaveTo
+            }
+        }
+        do {
+            try managedObjectContect.save()
+            print("\(photoDataToSave.count) photos saved")
+        } catch {
+            print("error saving photos")
+        }
     }
     
     private init() {}

@@ -19,7 +19,7 @@ class MapViewController: UIViewController {
     }
     
     //MARK: Properties
-    var activeAnnotion: PinAnnotation!
+    var activeAnnotation: PinAnnotation!
     var pointPressed = CGPoint()
     var coordinate = CLLocationCoordinate2D()
     var savedRegionLoaded = false //variable which is set to true on initial loading of the user's saved map region, thus preventing unnecessary loading of a user's saved map region each time the user returns from the photo album controller
@@ -46,24 +46,24 @@ class MapViewController: UIViewController {
         case .Began:
             let coordinate = mapView.convertPoint(gesture.locationInView(mapView), toCoordinateFromView: mapView)
             let newAnnotation = PinAnnotation(latitude: coordinate.latitude, longitude: coordinate.longitude, title: nil, subtitle: nil, context: sharedContext)
-            activeAnnotion = newAnnotation
+            activeAnnotation = newAnnotation
             updatePinLocatin(gesture)
             newAnnotation.latitude = coordinate.latitude
             newAnnotation.longitude = coordinate.longitude
             mapView.addAnnotation(newAnnotation)
         case .Changed: //need to include .Changed so that the pin will move along with the finger drag
             updatePinLocatin(gesture)
-            activeAnnotion.latitude = coordinate.latitude
-            activeAnnotion.latitude = coordinate.longitude
+            activeAnnotation.latitude = coordinate.latitude
+            activeAnnotation.latitude = coordinate.longitude
         case .Ended:
             updatePinLocatin(gesture)
             do {
                 try sharedContext.save()
             } catch {
-                print("error saving")
+                print("error saving pin")
             }
-            lookUpLocation(activeAnnotion)
-            getPhotosAtLocation(activeAnnotion.coordinate)
+            lookUpLocation(activeAnnotation)
+            getPhotosAtLocation(activeAnnotation.coordinate)
         default:
             break
         }
@@ -77,7 +77,7 @@ class MapViewController: UIViewController {
     
     func getPhotosAtLocation(coordinate: CLLocationCoordinate2D) {
         
-        flickrClient.executeGeoBasedFlickrSearch(coordinate.latitude, longitude: coordinate.longitude) { (success, photoArray, error) in
+        flickrClient.executeGeoBasedFlickrSearch(coordinate.latitude, longitude: coordinate.longitude) {[unowned self] (success, photoArray, error) in
             guard error == nil else {
                 dispatch_async(dispatch_get_main_queue()) {
                     self.callAlert("Error", message: error!, alertHandler: nil, presentationCompletionHandler: nil)
@@ -91,10 +91,8 @@ class MapViewController: UIViewController {
                 }
                 return
             }
-            
-            print(photoArray)
         
-            CoreDataStack.sharedInstance.savePhotosToDisk(photoArray)
+            CoreDataStack.sharedInstance.savePhotosToPin(photoArray, pinToSaveTo: self.activeAnnotation)
         }
     }
     
@@ -158,7 +156,7 @@ class MapViewController: UIViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == Constants.ShowPhotoAlbumSegue {
             if let destinationViewController = segue.destinationViewController as? PhotoAlbumViewController, let senderAnnotationView = sender as? MKAnnotationView {
-                if let annotation = senderAnnotationView.annotation {
+                if let annotation = senderAnnotationView.annotation as? PinAnnotation {
                     destinationViewController.annotationToShow = annotation
                     if let title = annotation.title {
                         destinationViewController.localityName = title
@@ -195,11 +193,12 @@ class MapViewController: UIViewController {
                 let span = MKCoordinateSpan(latitudeDelta: savedRegion["mapRegionSpanLatDelta"]!, longitudeDelta: savedRegion["mapRegionSpanLonDelta"]!)
                 mapView.region = MKCoordinateRegion(center: center, span: span)
             }
+            
+            let annotationsToLoad = loadAllPins()
+            mapView.addAnnotations(annotationsToLoad)
+            
             savedRegionLoaded = true
         }
-        
-        let annotationsToLoad = loadAllPins()
-        mapView.addAnnotations(annotationsToLoad)
     }
 }
 
@@ -218,6 +217,7 @@ extension MapViewController: MKMapViewDelegate {
         }
         
         annotationView?.draggable = true
+        annotationView?.animatesDrop = true
         return annotationView
     }
 
