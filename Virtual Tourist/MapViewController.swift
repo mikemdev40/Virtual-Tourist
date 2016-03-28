@@ -23,7 +23,7 @@ class MapViewController: UIViewController {
     var activeAnnotation: PinAnnotation!
     var pointPressed = CGPoint()
     var coordinate = CLLocationCoordinate2D()
-    var savedRegionLoaded = false //variable which is set to true on initial loading of the user's saved map region, thus preventing unnecessary loading of a user's saved map region each time the user returns from the photo album controller
+    var initiallyLoaded = false //variable which is set to true on initial loading of the user's saved map region, thus preventing unnecessary loading of a user's saved map region each time the user returns from the photo album controller
     
     //Set up the longpress gesture recognizer when the map view outlet gets set
     @IBOutlet weak var mapView: MKMapView! {
@@ -190,7 +190,7 @@ class MapViewController: UIViewController {
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         
-        if !savedRegionLoaded {
+        if !initiallyLoaded {
             if let savedRegion = NSUserDefaults.standardUserDefaults().objectForKey("savedMapRegion") as? [String: Double] {
                 let center = CLLocationCoordinate2D(latitude: savedRegion["mapRegionCenterLat"]!, longitude: savedRegion["mapRegionCenterLon"]!)
                 let span = MKCoordinateSpan(latitudeDelta: savedRegion["mapRegionSpanLatDelta"]!, longitudeDelta: savedRegion["mapRegionSpanLonDelta"]!)
@@ -200,7 +200,7 @@ class MapViewController: UIViewController {
             let annotationsToLoad = loadAllPins()
             mapView.addAnnotations(annotationsToLoad)
             
-            savedRegionLoaded = true
+            initiallyLoaded = true
         }
     }
 }
@@ -220,7 +220,6 @@ extension MapViewController: MKMapViewDelegate {
         }
         
         annotationView?.draggable = true
-        annotationView?.animatesDrop = true
         return annotationView
     }
 

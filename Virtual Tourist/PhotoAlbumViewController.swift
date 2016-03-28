@@ -168,7 +168,6 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         cell.layer.cornerRadius = 5
         cell.imageView.clipsToBounds = true
         cell.imageView.contentMode = .ScaleAspectFill
-       
         
         let photoObjectToDisplay = fetchedResultsContoller.objectAtIndexPath(indexPath) as! Photo
        
@@ -191,7 +190,6 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
                 }
             })
         }
-        
         return cell
     }
     
