@@ -25,6 +25,9 @@ class PhotoAlbumViewController: UIViewController {
     var localityName: String?
     var annotationToShow: PinAnnotation!
 
+    var insertedIndexPaths: [NSIndexPath]!
+    var deletedIndexPaths: [NSIndexPath]!
+    
     @IBOutlet weak var mapView: MKMapView! {
         didSet {
             mapView.delegate = self
@@ -89,7 +92,7 @@ class PhotoAlbumViewController: UIViewController {
         //causes the collection view to invalidate its current layout and relay out the collection view using the new settings in the flow layout (without this call, the cells don't properly resize upon rotation)
         flowLayout.invalidateLayout()
     }
-    
+
     func callAlert(title: String, message: String, alertHandler: ((UIAlertAction) -> Void)?, presentationCompletionHandler: (() -> Void)?) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
         alertController.addAction(UIAlertAction(title: "OK", style: .Default, handler: alertHandler))
@@ -211,19 +214,37 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
 extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
     
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
-        
-    }
-    
-    func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
-        
+        insertedIndexPaths = [NSIndexPath]()
+        deletedIndexPaths = [NSIndexPath]()
     }
     
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
-        
+        switch type {
+            
+        case .Insert:
+            print("insert")
+            insertedIndexPaths.append(newIndexPath!)
+        case .Delete:
+            print("delete")
+            deletedIndexPaths.append(indexPath!)
+        case .Update:
+            print("update")
+        default:
+            break
+        }
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        
+        collectionView.performBatchUpdates({ [unowned self] in
+                for indexPath in self.insertedIndexPaths {
+                    self.collectionView.insertItemsAtIndexPaths([indexPath])
+                }
+                for indexPath in self.deletedIndexPaths {
+                    self.collectionView.deleteItemsAtIndexPaths([indexPath])
+                }
+            }) { (bool) in
+                print("COMPLETE")
+        }
     }
     
 }
