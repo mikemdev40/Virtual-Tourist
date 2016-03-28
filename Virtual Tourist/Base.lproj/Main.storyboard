@@ -76,11 +76,16 @@
                                                     <rect key="frame" x="0.0" y="0.0" width="134" height="134"/>
                                                     <color key="backgroundColor" red="1" green="1" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                                                 </imageView>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="AfE-Cd-2YJ">
+                                                    <rect key="frame" x="57" y="57" width="20" height="20"/>
+                                                </activityIndicatorView>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                         <constraints>
+                                            <constraint firstItem="AfE-Cd-2YJ" firstAttribute="centerY" secondItem="ldk-IW-YMr" secondAttribute="centerY" id="3jk-pv-DzA"/>
                                             <constraint firstItem="ldk-IW-YMr" firstAttribute="leading" secondItem="Xuc-M1-hAN" secondAttribute="leading" id="5F0-12-zyo"/>
+                                            <constraint firstItem="AfE-Cd-2YJ" firstAttribute="centerX" secondItem="ldk-IW-YMr" secondAttribute="centerX" id="CrP-Gz-aXm"/>
                                             <constraint firstItem="ldk-IW-YMr" firstAttribute="top" secondItem="Xuc-M1-hAN" secondAttribute="top" id="NYe-z6-L0b"/>
                                             <constraint firstAttribute="trailing" secondItem="ldk-IW-YMr" secondAttribute="trailing" id="gdq-j7-6d3"/>
                                             <constraint firstItem="ldk-IW-YMr" firstAttribute="top" secondItem="Xuc-M1-hAN" secondAttribute="top" id="h9a-uk-Hac"/>
@@ -88,6 +93,7 @@
                                         </constraints>
                                         <connections>
                                             <outlet property="imageView" destination="ldk-IW-YMr" id="I0l-2a-xXQ"/>
+                                            <outlet property="spinner" destination="AfE-Cd-2YJ" id="deK-S5-I5A"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>

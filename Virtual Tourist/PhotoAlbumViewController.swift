@@ -174,6 +174,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         if let photoImage = photoObjectToDisplay.photoImage {
             cell.imageView.image = photoImage
             print("photo loaded")
+            cell.spinner.stopAnimating()
         } else {
             FlickrClient.sharedInstance.getImageForUrl(photoObjectToDisplay.flickrURL, completionHandler: { (data, error) in
                 guard error == nil else {
@@ -186,6 +187,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
                         print("photo DOWNLOADED")
                         cell.imageView.image = photo
                         photoObjectToDisplay.photoImage = photo
+                        cell.spinner.stopAnimating()
                     }
                 }
             })

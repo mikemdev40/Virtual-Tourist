@@ -72,8 +72,8 @@
 			children = (
 				7A0091A31C93C92D00757C49 /* AppDelegate.swift */,
 				7A4121A01CA64656009303CB /* Model */,
-				7A4121A21CA6466A009303CB /* Controllers */,
 				7A4121A11CA64662009303CB /* View */,
+				7A4121A21CA6466A009303CB /* Controllers */,
 				7A0091A71C93C92D00757C49 /* Main.storyboard */,
 				7A0091AA1C93C92D00757C49 /* Assets.xcassets */,
 				7A0091AC1C93C92D00757C49 /* LaunchScreen.storyboard */,
