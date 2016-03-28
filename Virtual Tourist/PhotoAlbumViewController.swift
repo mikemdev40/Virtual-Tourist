@@ -15,6 +15,7 @@ class PhotoAlbumViewController: UIViewController {
     struct Constants {
         static let SpanDeltaLongitude: CLLocationDegrees = 2
         static let CellVerticalSpacing: CGFloat = 4
+        static let CellAlphaWhenSelectedForDelete: CGFloat = 0.35
     }
     
     var SpanDeltaLatitude: CLLocationDegrees {
@@ -25,6 +26,7 @@ class PhotoAlbumViewController: UIViewController {
     var localityName: String?
     var annotationToShow: PinAnnotation!
 
+    var selectedIndexPaths = [NSIndexPath]()
     var insertedIndexPaths: [NSIndexPath]!
     var deletedIndexPaths: [NSIndexPath]!
     
@@ -169,6 +171,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         cell.layer.borderWidth = 1
         cell.layer.borderColor = UIColor.blackColor().CGColor
         cell.layer.cornerRadius = 5
+        cell.imageView.backgroundColor = UIColor.lightGrayColor()
         cell.imageView.clipsToBounds = true
         cell.imageView.contentMode = .ScaleAspectFill
         
@@ -205,7 +208,16 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
     //Collection View Delegate Methods
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        print("MARK FOR DELETE!")
+        let selectedCell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCollectionViewCell
+        
+        if let index = selectedIndexPaths.indexOf(indexPath) {
+            selectedCell.imageView.alpha = 1.0
+            selectedIndexPaths.removeAtIndex(index)
+        } else {
+            selectedCell.backgroundColor = UIColor.redColor()
+            selectedCell.imageView.alpha = Constants.CellAlphaWhenSelectedForDelete
+            selectedIndexPaths.append(indexPath)
+        }
     }
 }
 
