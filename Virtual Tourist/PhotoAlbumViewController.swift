@@ -18,6 +18,11 @@ class PhotoAlbumViewController: UIViewController {
         static let CellAlphaWhenSelectedForDelete: CGFloat = 0.35
     }
     
+    enum ButtonType {
+        case NewCollection
+        case DeleteImages
+    }
+    
     var SpanDeltaLatitude: CLLocationDegrees {
         let mapViewRatio = mapView.frame.height / mapView.frame.width
         return Constants.SpanDeltaLongitude * Double(mapViewRatio)
@@ -26,9 +31,22 @@ class PhotoAlbumViewController: UIViewController {
     var localityName: String?
     var annotationToShow: PinAnnotation!
 
-    var selectedIndexPaths = [NSIndexPath]()
+    var selectedIndexPaths = [NSIndexPath]() {
+        didSet {
+            if selectedIndexPaths.count > 0 {
+                setupToolbar(.DeleteImages)
+            } else {
+                setupToolbar(.NewCollection)
+            }
+        }
+    }
+    
     var insertedIndexPaths: [NSIndexPath]!
     var deletedIndexPaths: [NSIndexPath]!
+    
+    var removePicturesButton: UIBarButtonItem!
+    var getNewCollectionButton: UIBarButtonItem!
+    var spacerButton = UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: nil)
     
     @IBOutlet weak var mapView: MKMapView! {
         didSet {
@@ -95,6 +113,23 @@ class PhotoAlbumViewController: UIViewController {
         flowLayout.invalidateLayout()
     }
 
+    func removeImages() {
+        
+    }
+    
+    func setupToolbar(buttonToShow: ButtonType) {
+        switch buttonToShow {
+        case .NewCollection:
+            setToolbarItems([spacerButton, getNewCollectionButton, spacerButton], animated: true)
+        case .DeleteImages:
+            setToolbarItems([spacerButton, removePicturesButton, spacerButton], animated: true)
+        }
+    }
+    
+    func getNewCollection() {
+        
+    }
+    
     func callAlert(title: String, message: String, alertHandler: ((UIAlertAction) -> Void)?, presentationCompletionHandler: (() -> Void)?) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
         alertController.addAction(UIAlertAction(title: "OK", style: .Default, handler: alertHandler))
@@ -112,15 +147,11 @@ class PhotoAlbumViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     
-    
-        print(annotationToShow.photos?.count)
-        if let ann = annotationToShow.photos?.first {
-            print(ann.photoID)
-            print(ann.flickrURL)
-            print(ann.photoURLonDisk)
-        } else {
-            print("empty")
-        }
+        removePicturesButton = UIBarButtonItem(barButtonSystemItem: .Trash, target: self, action: #selector(PhotoAlbumViewController.removeImages))
+        getNewCollectionButton = UIBarButtonItem(title: "Get New Collection", style: .Plain, target: self, action: #selector(PhotoAlbumViewController.getNewCollection))
+
+        // DELETE FUNCTIONALITY!!!  dont forget to delete the image files! and delete object from core data using sharedContext.deleteObject
+        setupToolbar(.NewCollection)
         
         fetchedResultsContoller.delegate = self
         
@@ -144,7 +175,12 @@ class PhotoAlbumViewController: UIViewController {
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        
+        navigationController?.setToolbarHidden(false, animated: true)
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.setToolbarHidden(true, animated: true)
     }
 }
 
@@ -209,6 +245,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         let selectedCell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCollectionViewCell
+        
         
         if let index = selectedIndexPaths.indexOf(indexPath) {
             selectedCell.imageView.alpha = 1.0
