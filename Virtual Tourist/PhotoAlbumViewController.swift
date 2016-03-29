@@ -188,6 +188,8 @@ class PhotoAlbumViewController: UIViewController {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
+        navigationController?.toolbarHidden = false
+            
         mapView.region = MKCoordinateRegion(center: annotationToShow.coordinate, span: MKCoordinateSpan(latitudeDelta: SpanDeltaLatitude, longitudeDelta: Constants.SpanDeltaLongitude))
         mapView.addAnnotation(annotationToShow)
         
@@ -200,12 +202,12 @@ class PhotoAlbumViewController: UIViewController {
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        navigationController?.setToolbarHidden(false, animated: true)
+    
     }
     
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationController?.setToolbarHidden(true, animated: true)
+        navigationController?.toolbarHidden = true
     }
 }
 
