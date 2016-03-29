@@ -39,20 +39,20 @@ class ImageFileManager {
     }
     
     func retrieveImageFromDisk(photoURL: String?) -> UIImage? {
-        if photoURL == nil {
+        guard let photoURL = photoURL else {
             print("photourl nil")
             return nil
         }
         
-        if let photoImage = imageCache.objectForKey(photoURL!) as? UIImage {
+        if let photoImage = imageCache.objectForKey(photoURL) as? UIImage {
             print("cache")
             return photoImage
         }
         
-        if let photoData = NSData(contentsOfFile: photoURL!) {
+        if let photoData = NSData(contentsOfFile: photoURL) {
             print("nsdata")
             if let photo = UIImage(data: photoData) {
-                imageCache.setObject(photo, forKey: photoURL!)  //saves it to cache once it is loaded from the hard drive the first time
+                imageCache.setObject(photo, forKey: photoURL)  //saves it to cache once it is loaded from the hard drive the first time
                 return photo
             }
         }
@@ -61,8 +61,19 @@ class ImageFileManager {
         return nil
     }
     
-    func deleteImageFromDisk() {
+    func deleteImageFromDisk(photoURL: String?) -> Bool {
+        guard let photoURL = photoURL else {
+            return false
+        }
         
+        imageCache.removeObjectForKey(photoURL)
+        
+        do {
+            try fileManager.removeItemAtPath(photoURL)
+            return true
+        } catch {
+            return false
+        }
     }
     
     private init() {}

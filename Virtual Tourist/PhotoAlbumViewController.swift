@@ -113,7 +113,32 @@ class PhotoAlbumViewController: UIViewController {
         flowLayout.invalidateLayout()
     }
 
+    //the fetchedResultsController monitors and shares updates (via the delegate) that are made to the managed context (not necessarily to the persistent store), so deletions thare are made to the context via sharedContext.deleteObject will still register with the fetchedcontroller and the collection view will still get updated via the fetched controller's delegte properties, but such deletions are not persisted unless saveContext is performed!
     func removeImages() {
+        //iterate through selectedIndexes and for each, delete it from core data; SAVE context
+        
+        for index in selectedIndexPaths {
+            sharedContext.deleteObject(fetchedResultsContoller.objectAtIndexPath(index) as! Photo)
+        }
+        
+        if sharedContext.hasChanges {
+            print("has changes")
+        } else {
+            print("NO changes")
+        }
+        
+        //resets the selected index paths array
+        selectedIndexPaths = []
+        
+        //note that without saving to the managed context, the collection view controller would still get updated via the delete and subsequent batch update (since the fetch controller gets called when the CONTEXT changes, not necessarily the underlying persistent store), however the pictures would still be associationed with the pin and upon opening the app again, the images would re-download (since they have been removed from the disk via the prepareForDelete method on the Photo object class)
+        do {
+            try sharedContext.save()
+        } catch let error as NSError {
+            callAlert("Update error", message: error.localizedDescription, alertHandler: nil, presentationCompletionHandler: nil)
+        }
+    }
+    
+    func getNewCollection() {
         
     }
     
@@ -124,10 +149,6 @@ class PhotoAlbumViewController: UIViewController {
         case .DeleteImages:
             setToolbarItems([spacerButton, removePicturesButton, spacerButton], animated: true)
         }
-    }
-    
-    func getNewCollection() {
-        
     }
     
     func callAlert(title: String, message: String, alertHandler: ((UIAlertAction) -> Void)?, presentationCompletionHandler: (() -> Void)?) {
@@ -245,7 +266,6 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         let selectedCell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCollectionViewCell
-        
         
         if let index = selectedIndexPaths.indexOf(indexPath) {
             selectedCell.imageView.alpha = 1.0
