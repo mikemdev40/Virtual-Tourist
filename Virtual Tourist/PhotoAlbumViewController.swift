@@ -225,6 +225,15 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
     func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoCell", forIndexPath: indexPath) as! PhotoCollectionViewCell
+        
+        //this code checks to see if the indexPath of the cell that is being configured corresponds to a cell that is currently selected for delete; this is required to prevent the red selected color from "bouncing around" to a different cell when the user selects a cell, scrolls it off the screen, then scrolls it back
+        if let _ = selectedIndexPaths.indexOf(indexPath) {
+            cell.imageView.alpha = Constants.CellAlphaWhenSelectedForDelete //if the cell is currently selected, then make sure it still shows red when a cell is pulled from the queue and reused (i.e. when a user scrolls the image off the view then back again); note that this doens't alter the array of selected indices anyway, just manages proper coloring of the cell when necessary
+        } else {
+            cell.backgroundColor = UIColor.redColor()  //otherwise, make sure it doesn't show red!
+            cell.imageView.alpha = 1.0
+        }
+        
         cell.layer.borderWidth = 1
         cell.layer.borderColor = UIColor.blackColor().CGColor
         cell.layer.cornerRadius = 5
@@ -265,6 +274,8 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
     //Collection View Delegate Methods
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+        
+        print("did select item")
         let selectedCell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCollectionViewCell
         
         if let index = selectedIndexPaths.indexOf(indexPath) {
