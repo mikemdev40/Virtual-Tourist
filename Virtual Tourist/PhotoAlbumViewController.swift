@@ -12,26 +12,29 @@ import CoreData
 
 class PhotoAlbumViewController: UIViewController {
 
-    struct Constants {
-        static let SpanDeltaLongitude: CLLocationDegrees = 2
-        static let CellVerticalSpacing: CGFloat = 4
-        static let CellAlphaWhenSelectedForDelete: CGFloat = 0.35
-    }
-    
+    //MARK: -------- TYPES --------
     enum ButtonType {
         case NewCollection
         case DeleteImages
     }
     
+    //MARK: -------- PROPERTIES --------
     var SpanDeltaLatitude: CLLocationDegrees {
         let mapViewRatio = mapView.frame.height / mapView.frame.width
-        return Constants.SpanDeltaLongitude * Double(mapViewRatio)
+        return Constants.PhotoAlbumConstants.SpanDeltaLongitude * Double(mapViewRatio)
     }
     
+    //properties that are set by the segued-from view controller
     var localityName: String?
     var annotationToShow: PinAnnotation!
-    var isStillLoadingText: String?
-
+    var isStillLoadingText: String? {
+        didSet {
+            noPhotosLabel?.text = isStillLoadingText
+            noPhotosLabel?.hidden = false
+        }
+    }
+    
+    //properties used for temporarily storing the indexPaths of selected, inserted, and deleted photos
     var selectedIndexPaths = [NSIndexPath]() {
         didSet {
             if selectedIndexPaths.count > 0 {
@@ -41,14 +44,15 @@ class PhotoAlbumViewController: UIViewController {
             }
         }
     }
-    
     var insertedIndexPaths: [NSIndexPath]!
     var deletedIndexPaths: [NSIndexPath]!
     
+    //button properties for the toolbar
     var removePicturesButton: UIBarButtonItem!
     var getNewCollectionButton: UIBarButtonItem!
     var spacerButton = UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: nil)
     
+    //outlets
     @IBOutlet weak var mapView: MKMapView! {
         didSet {
             mapView.delegate = self
@@ -64,13 +68,13 @@ class PhotoAlbumViewController: UIViewController {
     
     @IBOutlet weak var noPhotosLabel: UILabel!
     
-    //connecting to the collection view's flow layout object enables its customization
-    @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
+    @IBOutlet weak var flowLayout: UICollectionViewFlowLayout! //connecting to the collection view's flow layout object enables its customization
     
+    //properties for working with core data
     var sharedContext: NSManagedObjectContext {
         return CoreDataStack.sharedInstance.managedObjectContect
     }
-
+    
     lazy var fetchedResultsContoller: NSFetchedResultsController = {
         let fetchRequest = NSFetchRequest(entityName: "Photo")
         fetchRequest.predicate = NSPredicate(format: "pin == %@", self.annotationToShow)
@@ -79,6 +83,12 @@ class PhotoAlbumViewController: UIViewController {
         let contoller = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.sharedContext, sectionNameKeyPath: nil, cacheName: nil)
         return contoller
     }()
+    
+    //property for working with the flickr clent to download images
+    let flickrClient = FlickrClient.sharedInstance
+
+    
+    //MARK: -------- CUSTOM METHODS --------
     
     ///this method determines the cell layout (and does do differently depending on whether the device is in portrait or landscape mode) and is called when "viewDidLayoutSubviews" is called (which happens multiple times throughout the view controller's lifecycle, as well as when the device is phycially rotated)
     func layoutCells() {
@@ -103,10 +113,10 @@ class PhotoAlbumViewController: UIViewController {
         cellWidth = collectionView.frame.width / numWide
         
         //updates the cell width to account for the desired cell spacing (a predetermined constant, defined in the Constants struct), then updates the itemSize accordingly
-        cellWidth -= Constants.CellVerticalSpacing
+        cellWidth -= Constants.PhotoAlbumConstants.CellVerticalSpacing
         flowLayout.itemSize.width = cellWidth
         flowLayout.itemSize.height = cellWidth
-        flowLayout.minimumInteritemSpacing = Constants.CellVerticalSpacing
+        flowLayout.minimumInteritemSpacing = Constants.PhotoAlbumConstants.CellVerticalSpacing
         
         //calculates the actual vertical spacing between cells, accounting for the additional vertical space that was subtracted from the cell width (e.g. if there are 3 cells, there are only 2 vertical spaces, not 3); then by setting the line spacing to be equal to this "actual" value, the vertical and horizontal distances between cells should be exact (or as close to exact as possible)
         let actualCellVerticalSpacing: CGFloat = (collectionView.frame.width - (numWide * cellWidth))/(numWide - 1)
@@ -139,6 +149,41 @@ class PhotoAlbumViewController: UIViewController {
     
     func getNewCollection() {
         
+        //delete current collection
+        for photo in fetchedResultsContoller.fetchedObjects as! [Photo] {
+            sharedContext.deleteObject(photo)
+        }
+        
+        isStillLoadingText = "Retrieving Images..."
+        
+        flickrClient.executeGeoBasedFlickrSearch(annotationToShow.latitude, longitude: annotationToShow.longitude) {[unowned self] (success, photoArray, error) in
+            guard error == nil else {
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.callAlert("Error", message: error!, alertHandler: nil, presentationCompletionHandler: nil)
+                }
+                return
+            }
+            
+            guard let photoArray = photoArray else {
+                dispatch_async(dispatch_get_main_queue()) {
+                    self.callAlert("Error", message: "No photos in the photo array", alertHandler: nil, presentationCompletionHandler: nil)
+                }
+                return
+            }
+            
+            CoreDataStack.sharedInstance.savePhotosToPin(photoArray, pinToSaveTo: self.annotationToShow, maxNumberToSave: Constants.MapViewConstants.MaxNumberOfPhotosToSavePerPin)
+            dispatch_async(dispatch_get_main_queue()) {
+                do {
+                    try self.sharedContext.save()
+                    print("SUCCESSFUL RE-SAVE")
+                } catch let error as NSError {
+                    self.callAlert("Error", message: error.localizedDescription, alertHandler: nil, presentationCompletionHandler: nil)
+                }
+                if photoArray.count == 0 {
+                    self.isStillLoadingText = "No Images Found at this Location."
+                }
+            }
+        }
     }
     
     func setupToolbar(buttonToShow: ButtonType) {
@@ -156,13 +201,13 @@ class PhotoAlbumViewController: UIViewController {
         presentViewController(alertController, animated: true, completion: presentationCompletionHandler)
     }
     
-    //MARK: VIEW CONTROLLER METHODS
+    //MARK: -------- VIEW CONTROLLER METHODS --------
     
     override func viewDidLayoutSubviews() {
         layoutCells()
     }
     
-    //MARK: VIEW CONTROLLER LIFECYCLE
+    //MARK: -------- VIEW CONTROLLER LIFECYCLE --------
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -189,7 +234,7 @@ class PhotoAlbumViewController: UIViewController {
         
         navigationController?.toolbarHidden = false
             
-        mapView.region = MKCoordinateRegion(center: annotationToShow.coordinate, span: MKCoordinateSpan(latitudeDelta: SpanDeltaLatitude, longitudeDelta: Constants.SpanDeltaLongitude))
+        mapView.region = MKCoordinateRegion(center: annotationToShow.coordinate, span: MKCoordinateSpan(latitudeDelta: SpanDeltaLatitude, longitudeDelta: Constants.PhotoAlbumConstants.SpanDeltaLongitude))
         mapView.addAnnotation(annotationToShow)
         
         if localityName != nil {
@@ -205,7 +250,7 @@ class PhotoAlbumViewController: UIViewController {
     }
 }
 
-//MARK: COLLECTION VIEW DELEGATE & DATASOURCE METHODS
+//MARK: -------- COLLECTION VIEW DELEGATE & DATASOURCE METHODS --------
 
 extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
@@ -230,7 +275,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         
         //this code checks to see if the indexPath of the cell that is being configured corresponds to a cell that is currently selected for delete; this is required to prevent the red selected color from "bouncing around" to a different cell when the user selects a cell, scrolls it off the screen, then scrolls it back
         if let _ = selectedIndexPaths.indexOf(indexPath) {
-            cell.imageView.alpha = Constants.CellAlphaWhenSelectedForDelete //if the cell is currently selected, then make sure it still shows red when a cell is pulled from the queue and reused (i.e. when a user scrolls the image off the view then back again); note that this doens't alter the array of selected indices anyway, just manages proper coloring of the cell when necessary
+            cell.imageView.alpha = Constants.PhotoAlbumConstants.CellAlphaWhenSelectedForDelete //if the cell is currently selected, then make sure it still shows red when a cell is pulled from the queue and reused (i.e. when a user scrolls the image off the view then back again); note that this doens't alter the array of selected indices anyway, just manages proper coloring of the cell when necessary
         } else {
             cell.backgroundColor = UIColor.redColor()  //otherwise, make sure it doesn't show red!
             cell.imageView.alpha = 1.0
@@ -285,13 +330,13 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
             selectedIndexPaths.removeAtIndex(index)
         } else {
             selectedCell.backgroundColor = UIColor.redColor()
-            selectedCell.imageView.alpha = Constants.CellAlphaWhenSelectedForDelete
+            selectedCell.imageView.alpha = Constants.PhotoAlbumConstants.CellAlphaWhenSelectedForDelete
             selectedIndexPaths.append(indexPath)
         }
     }
 }
 
-//MARK: FETCHEDCONTROLLER DELEGATE METHODS
+//MARK: -------- FETCHEDCONTROLLER DELEGATE METHODS --------
 
 extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
     
@@ -332,7 +377,7 @@ extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
     
 }
 
-//MARK: MAPVIEW DELEGATE METHODS
+//MARK: -------- MAPVIEW DELEGATE METHODS --------
 
 extension PhotoAlbumViewController: MKMapViewDelegate {
     

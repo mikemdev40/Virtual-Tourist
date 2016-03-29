@@ -44,7 +44,7 @@ class FlickrClient {
             static let Format = "json"
             static let NoJSONCallback = "1"
             static let SafeSearch = "1"
-            static let Radius = "3"
+            static let Radius = "10"
             static let RadiusUnits = "mi"
             static let MinDateOfPhoto = "2010-01-01"  //returns photos since january 1, 2010 (arbitrarily chosen)
         }

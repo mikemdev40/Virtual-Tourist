@@ -11,13 +11,6 @@ import MapKit
 import CoreData
 
 class MapViewController: UIViewController {
-
-    //MARK: Constants
-    struct Constants {
-        static let LongPressDuration = 0.5
-        static let ShowPhotoAlbumSegue = "ShowPhotoAlbum"
-        static let MaxNumberOfPhotosToSavePerPin = 15
-    }
     
     //MARK: Properties
     var activeAnnotation: PinAnnotation!
@@ -31,7 +24,7 @@ class MapViewController: UIViewController {
         didSet {
             mapView.delegate = self
             let longPress = UILongPressGestureRecognizer(target: self, action: #selector(MapViewController.dropPin(_:)))
-            longPress.minimumPressDuration = Constants.LongPressDuration
+            longPress.minimumPressDuration = Constants.MapViewConstants.LongPressDuration
             mapView.addGestureRecognizer(longPress)
         }
     }
@@ -99,7 +92,7 @@ class MapViewController: UIViewController {
                 return
             }
         
-            CoreDataStack.sharedInstance.savePhotosToPin(photoArray, pinToSaveTo: self.activeAnnotation, maxNumberToSave: Constants.MaxNumberOfPhotosToSavePerPin)
+            CoreDataStack.sharedInstance.savePhotosToPin(photoArray, pinToSaveTo: self.activeAnnotation, maxNumberToSave: Constants.MapViewConstants.MaxNumberOfPhotosToSavePerPin)
             self.imageFetchExecuting = false
         }
     }
@@ -162,7 +155,7 @@ class MapViewController: UIViewController {
     //MARK: View Controller Methods
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == Constants.ShowPhotoAlbumSegue {
+        if segue.identifier == Constants.MapViewConstants.ShowPhotoAlbumSegue {
             if let destinationViewController = segue.destinationViewController as? PhotoAlbumViewController, let senderAnnotationView = sender as? MKAnnotationView {
                 if let annotation = senderAnnotationView.annotation as? PinAnnotation {
                     print("loaded annotation")
@@ -233,7 +226,7 @@ extension MapViewController: MKMapViewDelegate {
     }
 
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
-        performSegueWithIdentifier(Constants.ShowPhotoAlbumSegue, sender: view)
+        performSegueWithIdentifier(Constants.MapViewConstants.ShowPhotoAlbumSegue, sender: view)
         
         //the following sets the annotation back to "not selected" so it is possible to re-tap on it again after returning from the photo album view; this is necessary because when an annotation is first tapped, it's registered as "selected" and stays that way, so when trying to tap on it again after returning from the photo album view, it doesn't call the "didSelectAnnotationView" delegate method because technically it is already selected!  thank you stackoverflow for this insight and resolution: http://stackoverflow.com/questions/26620672/mapview-didselectannotationview-not-functioning-properly
         mapView.deselectAnnotation(view.annotation, animated: true)
