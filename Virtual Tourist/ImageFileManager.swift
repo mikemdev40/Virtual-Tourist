@@ -14,7 +14,7 @@ class ImageFileManager {
     
     static let sharedInstance = ImageFileManager()
     
-    private var imageCache = NSCache()
+//    private var imageCache = NSCache()
     private let fileManager = NSFileManager.defaultManager()
     
     func getURLforFileOnDisk(photoID: String) -> String? {
@@ -31,28 +31,40 @@ class ImageFileManager {
         }
         print("save photo to disk")
         
-        imageCache.setObject(photo, forKey: photoURL)
+//        imageCache.setObject(photo, forKey: photoURL)
         
         //the decision between JPEG and PNG was based on http://stackoverflow.com/questions/3929281/when-to-use-png-or-jpg-in-iphone-development
         let photoData = UIImageJPEGRepresentation(photo, 1.0)
         photoData?.writeToFile(photoURL, atomically: true)
     }
     
-    func retrieveImageFromDisk(photoURL: String?) -> UIImage? {
-        guard let photoURL = photoURL else {
+    func retrieveImageFromDisk(photoURLonDisk: String?, checkCacheForURL: String?) -> UIImage? {
+        guard let photoURLonDisk = photoURLonDisk else {
             print("photourl nil")
             return nil
         }
         
-        if let photoImage = imageCache.objectForKey(photoURL) as? UIImage {
-            print("cache")
-            return photoImage
+        //ADDED to take advantage of automatic caching that happens with URL requests!
+        if let checkCacheForURL = checkCacheForURL {
+            if let nsURL = NSURL(string: checkCacheForURL)  {
+                if let cachedData = NSURLCache.sharedURLCache().cachedResponseForRequest(NSURLRequest(URL: nsURL)) {
+                    print("THERE IS CACHED DATA WITH THIS URL!")
+                    if let photoFromCachedData = UIImage(data: cachedData.data) {
+                        return photoFromCachedData
+                    }
+                }
+            }
         }
         
-        if let photoData = NSData(contentsOfFile: photoURL) {
+//        if let photoImage = imageCache.objectForKey(photoURLonDisk) as? UIImage {
+//            print("cache")
+//            return photoImage
+//        }
+        
+        if let photoData = NSData(contentsOfFile: photoURLonDisk) {
             print("nsdata")
             if let photo = UIImage(data: photoData) {
-                imageCache.setObject(photo, forKey: photoURL)  //saves it to cache once it is loaded from the hard drive the first time
+//                imageCache.setObject(photo, forKey: photoURLonDisk)  //saves it to cache once it is loaded from the hard drive the first time
                 return photo
             }
         }
@@ -61,12 +73,19 @@ class ImageFileManager {
         return nil
     }
     
-    func deleteImageFromDisk(photoURL: String?) -> Bool {
+    func deleteImageFromDisk(photoURL: String?, checkCacheForURL: String?) -> Bool {
         guard let photoURL = photoURL else {
             return false
         }
-        
-        imageCache.removeObjectForKey(photoURL)
+
+        //ADDED to take advantage of automatic caching that happens with URL requests!
+        if let checkCacheForURL = checkCacheForURL {
+            if let nsURL = NSURL(string: checkCacheForURL)  {
+                NSURLCache.sharedURLCache().removeCachedResponseForRequest(NSURLRequest(URL: nsURL))
+                print("ITEM REMOVED FROM CACHE!!")
+            }
+        }
+//        imageCache.removeObjectForKey(photoURL)
         
         do {
             try fileManager.removeItemAtPath(photoURL)

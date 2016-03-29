@@ -28,7 +28,7 @@ class Photo: NSManagedObject {
     var photoImage: UIImage? {
         get {
             print("photoImage accessed")
-            return ImageFileManager.sharedInstance.retrieveImageFromDisk(photoURLonDisk)
+            return ImageFileManager.sharedInstance.retrieveImageFromDisk(photoURLonDisk, checkCacheForURL: flickrURL)
         }
         set {
             ImageFileManager.sharedInstance.saveImageToDisk(newValue, photoURLonDisk: photoURLonDisk)
@@ -48,7 +48,7 @@ class Photo: NSManagedObject {
     }
     
     override func prepareForDeletion() {
-        if ImageFileManager.sharedInstance.deleteImageFromDisk(photoURLonDisk) {
+        if ImageFileManager.sharedInstance.deleteImageFromDisk(photoURLonDisk, checkCacheForURL: flickrURL) {
             print("deleted successfully")
         } else {
             print("PROBLEM deleting")

@@ -45,6 +45,12 @@ class CoreDataStack {
     
     func savePhotosToPin(photoDataToSave: [[String : AnyObject]], pinToSaveTo: PinAnnotation, maxNumberToSave: Int) {
         
+        
+        
+        //TODO: SHUFFLE!!!!!!!!!! see https://www.hackingwithswift.com/example-code/arrays/how-to-shuffle-an-array-in-ios-9-using-gameplaykit
+
+        
+        
         if photoDataToSave.count > maxNumberToSave {
             for photoNum in 0...(maxNumberToSave - 1) {
                 if let imgURL = photoDataToSave[photoNum]["url_m"] as? String, let photoID = photoDataToSave[photoNum]["id"] as? String {
