@@ -24,6 +24,7 @@ class MapViewController: UIViewController {
     var pointPressed = CGPoint()
     var coordinate = CLLocationCoordinate2D()
     var initiallyLoaded = false //variable which is set to true on initial loading of the user's saved map region, thus preventing unnecessary loading of a user's saved map region each time the user returns from the photo album controller
+    var imageFetchExecuting = false
     
     //Set up the longpress gesture recognizer when the map view outlet gets set
     @IBOutlet weak var mapView: MKMapView! {
@@ -81,6 +82,8 @@ class MapViewController: UIViewController {
     
     func getPhotosAtLocation(coordinate: CLLocationCoordinate2D) {
         
+        imageFetchExecuting = true
+        
         flickrClient.executeGeoBasedFlickrSearch(coordinate.latitude, longitude: coordinate.longitude) {[unowned self] (success, photoArray, error) in
             guard error == nil else {
                 dispatch_async(dispatch_get_main_queue()) {
@@ -97,6 +100,7 @@ class MapViewController: UIViewController {
             }
         
             CoreDataStack.sharedInstance.savePhotosToPin(photoArray, pinToSaveTo: self.activeAnnotation, maxNumberToSave: Constants.MaxNumberOfPhotosToSavePerPin)
+            self.imageFetchExecuting = false
         }
     }
     
@@ -163,6 +167,11 @@ class MapViewController: UIViewController {
                 if let annotation = senderAnnotationView.annotation as? PinAnnotation {
                     print("loaded annotation")
                     destinationViewController.annotationToShow = annotation
+                    
+                    if imageFetchExecuting {
+                        destinationViewController.isStillLoadingText = "Retrieving Images..."
+                    }
+                    
                     if let title = annotation.title {
                         destinationViewController.localityName = title
                     }

@@ -30,6 +30,7 @@ class PhotoAlbumViewController: UIViewController {
     
     var localityName: String?
     var annotationToShow: PinAnnotation!
+    var isStillLoadingText: String?
 
     var selectedIndexPaths = [NSIndexPath]() {
         didSet {
@@ -123,18 +124,14 @@ class PhotoAlbumViewController: UIViewController {
             sharedContext.deleteObject(fetchedResultsContoller.objectAtIndexPath(index) as! Photo)
         }
         
-        if sharedContext.hasChanges {
-            print("has changes")
-        } else {
-            print("NO changes")
-        }
-        
         //resets the selected index paths array
         selectedIndexPaths = []
         
         //note that without saving to the managed context, the collection view controller would still get updated via the delete and subsequent batch update (since the fetch controller gets called when the CONTEXT changes, not necessarily the underlying persistent store), however the pictures would still be associationed with the pin and upon opening the app again, the images would re-download (since they have been removed from the disk via the prepareForDelete method on the Photo object class)
         do {
-            try sharedContext.save()
+            if sharedContext.hasChanges {
+                try sharedContext.save()
+            }
         } catch let error as NSError {
             callAlert("Update error", message: error.localizedDescription, alertHandler: nil, presentationCompletionHandler: nil)
         }
@@ -171,11 +168,13 @@ class PhotoAlbumViewController: UIViewController {
         super.viewDidLoad()
     
         noPhotosLabel.hidden = true
+        if isStillLoadingText != nil {
+            noPhotosLabel.text = isStillLoadingText
+        }
         
         removePicturesButton = UIBarButtonItem(barButtonSystemItem: .Trash, target: self, action: #selector(PhotoAlbumViewController.removeImages))
         getNewCollectionButton = UIBarButtonItem(title: "Get New Collection", style: .Plain, target: self, action: #selector(PhotoAlbumViewController.getNewCollection))
 
-        // DELETE FUNCTIONALITY!!!  dont forget to delete the image files! and delete object from core data using sharedContext.deleteObject
         setupToolbar(.NewCollection)
         
         fetchedResultsContoller.delegate = self
@@ -198,11 +197,6 @@ class PhotoAlbumViewController: UIViewController {
         } else {
             title = "Photos"
         }
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-        super.viewDidAppear(animated)
-    
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -304,6 +298,7 @@ extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
         insertedIndexPaths = [NSIndexPath]()
         deletedIndexPaths = [NSIndexPath]()
+        noPhotosLabel.hidden = true
     }
     
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
