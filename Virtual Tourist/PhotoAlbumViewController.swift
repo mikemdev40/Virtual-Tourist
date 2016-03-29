@@ -61,6 +61,8 @@ class PhotoAlbumViewController: UIViewController {
         }
     }
     
+    @IBOutlet weak var noPhotosLabel: UILabel!
+    
     //connecting to the collection view's flow layout object enables its customization
     @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
     
@@ -93,7 +95,7 @@ class PhotoAlbumViewController: UIViewController {
         case .LandscapeRight:
             numWide = 4
         default:
-            numWide = 4
+            numWide = 3
         }
         
         //sets the cell width to be dependent upon the number of cells that will be displayed in each row, as determined directly above
@@ -168,6 +170,8 @@ class PhotoAlbumViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     
+        noPhotosLabel.hidden = true
+        
         removePicturesButton = UIBarButtonItem(barButtonSystemItem: .Trash, target: self, action: #selector(PhotoAlbumViewController.removeImages))
         getNewCollectionButton = UIBarButtonItem(title: "Get New Collection", style: .Plain, target: self, action: #selector(PhotoAlbumViewController.getNewCollection))
 
@@ -214,7 +218,9 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
     //required
     func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if let section = fetchedResultsContoller.sections?[section] {
-            print("objects: \(section.numberOfObjects)")
+            if section.numberOfObjects == 0 {
+                noPhotosLabel.hidden = false
+            }
             return section.numberOfObjects
         } else {
             return 0

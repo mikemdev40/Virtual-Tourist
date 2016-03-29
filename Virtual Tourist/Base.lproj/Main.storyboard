@@ -58,6 +58,7 @@
                             </mapView>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="3rc-2F-VAH">
                                 <rect key="frame" x="0.0" y="187" width="600" height="412.5"/>
+                                <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="ELZ-em-LFF">
                                     <size key="itemSize" width="134" height="134"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -98,12 +99,24 @@
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Photos Saved for This Location" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jHm-rA-XKd">
+                                <rect key="frame" x="230.5" y="368.5" width="140" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="140" id="QVZ-Be-Nws"/>
+                                    <constraint firstAttribute="height" constant="50" id="m7M-UO-ius"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <color key="textColor" red="0.29803922770000002" green="0.29803922770000002" blue="0.29803922770000002" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="3rc-2F-VAH" firstAttribute="leading" secondItem="rbx-WM-iCK" secondAttribute="leading" id="8My-XF-FDa"/>
                             <constraint firstItem="zSi-YT-EJc" firstAttribute="height" secondItem="3rc-2F-VAH" secondAttribute="height" multiplier="0.3" id="DUC-O6-cLS"/>
                             <constraint firstItem="zSi-YT-EJc" firstAttribute="leading" secondItem="rbx-WM-iCK" secondAttribute="leading" id="Dcp-HA-gej"/>
+                            <constraint firstItem="jHm-rA-XKd" firstAttribute="centerX" secondItem="3rc-2F-VAH" secondAttribute="centerX" id="GSC-Vy-bDW"/>
+                            <constraint firstItem="jHm-rA-XKd" firstAttribute="centerY" secondItem="3rc-2F-VAH" secondAttribute="centerY" id="JVY-Kz-70m"/>
                             <constraint firstAttribute="trailing" secondItem="zSi-YT-EJc" secondAttribute="trailing" id="NLH-EZ-zth"/>
                             <constraint firstItem="zSi-YT-EJc" firstAttribute="top" secondItem="LsG-7X-zCJ" secondAttribute="bottom" id="PFP-SV-VU4"/>
                             <constraint firstItem="3rc-2F-VAH" firstAttribute="top" secondItem="zSi-YT-EJc" secondAttribute="bottom" id="Zqk-ln-wPR"/>
@@ -115,6 +128,7 @@
                         <outlet property="collectionView" destination="3rc-2F-VAH" id="8Na-Tw-fp9"/>
                         <outlet property="flowLayout" destination="ELZ-em-LFF" id="u8U-Xg-Bfd"/>
                         <outlet property="mapView" destination="zSi-YT-EJc" id="SAB-Q0-zl4"/>
+                        <outlet property="noPhotosLabel" destination="jHm-rA-XKd" id="fJ4-Qh-Poq"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="poK-eW-tpC" userLabel="First Responder" sceneMemberID="firstResponder"/>
