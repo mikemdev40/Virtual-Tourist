@@ -281,6 +281,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
             cell.imageView.alpha = 1.0
         }
         
+        cell.imageView.image = nil
         cell.layer.borderWidth = 1
         cell.layer.borderColor = UIColor.blackColor().CGColor
         cell.layer.cornerRadius = 5
@@ -293,8 +294,8 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
         if let photoImage = photoObjectToDisplay.photoImage {
             cell.imageView.image = photoImage
             print("photo loaded")
-            cell.spinner.stopAnimating()
         } else {
+            cell.spinner.startAnimating()
             FlickrClient.sharedInstance.getImageForUrl(photoObjectToDisplay.flickrURL, completionHandler: { (data, error) in
                 guard error == nil else {
                     return

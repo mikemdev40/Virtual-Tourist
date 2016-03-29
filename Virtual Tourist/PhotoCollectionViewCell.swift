@@ -14,7 +14,6 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var spinner: UIActivityIndicatorView! {
         didSet {
             spinner.hidesWhenStopped = true
-            spinner.startAnimating()
         }
     }
 }
