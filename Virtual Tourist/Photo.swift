@@ -27,7 +27,6 @@ class Photo: NSManagedObject {
     //computed property that, when accessed during collection view cell configuration, returns the saved value from the disk or returns nil; if this property returns nil when the cell calls for it, the cell congifuration then starts the downloading of the image which is then followed by setting this property equal to the freshly downladed image, thus invoking the setter observer below and the saving of the image to disk (and cache), which then leads to subsequent "get" calls to this property to return a non-nil image
     var photoImage: UIImage? {
         get {
-            print("photoImage accessed")
             return ImageFileManager.sharedInstance.retrieveImageFromDisk(photoURLonDisk, checkCacheForURL: flickrURL)
         }
         set {

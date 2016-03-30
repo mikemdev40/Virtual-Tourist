@@ -44,7 +44,7 @@ class ImageFileManager {
             return nil
         }
         
-        //ADDED to take advantage of automatic caching that happens with URL requests!
+        //ADDED to take advantage of automatic caching that happens with URL requests! (rather than using a custom NSCache
         if let checkCacheForURL = checkCacheForURL {
             if let nsURL = NSURL(string: checkCacheForURL)  {
                 if let cachedData = NSURLCache.sharedURLCache().cachedResponseForRequest(NSURLRequest(URL: nsURL)) {

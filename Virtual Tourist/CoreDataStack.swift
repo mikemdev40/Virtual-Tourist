@@ -47,7 +47,7 @@ class CoreDataStack {
         
         
         
-        //TODO: SHUFFLE!!!!!!!!!! see https://www.hackingwithswift.com/example-code/arrays/how-to-shuffle-an-array-in-ios-9-using-gameplaykit
+        //TODO: SHUFFLE!!!!!!!!!!
 
         
         

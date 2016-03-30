@@ -316,7 +316,7 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
     }
     
     func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-        return fetchedResultsContoller.sections?.count ?? 1
+        return fetchedResultsContoller.sections?.count ?? 0
     }
     
     //Collection View Delegate Methods
