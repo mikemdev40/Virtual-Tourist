@@ -24,7 +24,7 @@ class MapViewController: UIViewController {
     var coordinate = CLLocationCoordinate2D()
     var initiallyLoaded = false //variable which is set to true on initial loading of the user's saved map region, thus preventing unnecessary loading of a user's saved map region each time the user returns from the photo album controller
     var imageFetchExecuting = false
-    var editMode = false
+    var userTappedMapNotPin = true
     
     //Set up the longpress gesture recognizer when the map view outlet gets set
     @IBOutlet weak var mapView: MKMapView! {
@@ -216,6 +216,14 @@ class MapViewController: UIViewController {
         }
     }
     
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        if touches.first?.view as? MKPinAnnotationView == nil {
+            userTappedMapNotPin = true
+        } else {
+            userTappedMapNotPin = false
+        }
+    }
+    
     //MARK: View Controller Lifecycle
     
     override func viewDidLoad() {
@@ -275,13 +283,13 @@ extension MapViewController: MKMapViewDelegate {
         print("deselected")
         (view as! MKPinAnnotationView).pinTintColor = MKPinAnnotationView.redPinColor()
         
-        if mapView.selectedAnnotations.count == 0 {
+        if userTappedMapNotPin {
             setupToolbar(.Message)
         }
     }
     
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
-        
+        print("selected")
         if editing {
             setupToolbar(.DeletePin)
             activeAnnotation = view.annotation as? PinAnnotation
@@ -293,6 +301,8 @@ extension MapViewController: MKMapViewDelegate {
             //the following sets the annotation back to "not selected" so it is possible to re-tap on it again after returning from the photo album view; this is necessary because when an annotation is first tapped, it's registered as "selected" and stays that way, so when trying to tap on it again after returning from the photo album view, it doesn't call the "didSelectAnnotationView" delegate method because technically it is already selected!  thank you stackoverflow for this insight and resolution: http://stackoverflow.com/questions/26620672/mapview-didselectannotationview-not-functioning-properly
             mapView.deselectAnnotation(view.annotation, animated: true)
         }
+        
+        
     }
     
     //TODO:  enable dragging; CODE BELOW NEVER RUNS BECAUSE A "GRAB" on the pin registers the didSelectAnnotationView rather than as a grab
