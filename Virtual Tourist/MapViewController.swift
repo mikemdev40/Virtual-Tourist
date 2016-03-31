@@ -191,6 +191,7 @@ class MapViewController: UIViewController {
         } else {
             navigationController?.setToolbarHidden(true, animated: true)
             lastPinTapped?.pinTintColor = MKPinAnnotationView.redPinColor()
+            mapView.deselectAnnotation(activeAnnotation, animated: false)  //in case a user turned off edit mode while a pin was still in "ready for delete" (i.e. purple) status, this allows the user to them immediately tap the same pin again and enable the segue (otherwise, that pin is still "selected" and so the didSelectAnnotationView won't re-fire, having fired the first time when editing = true)
         }
     }
     

@@ -14,6 +14,8 @@ class PinAnnotation: NSManagedObject, MKAnnotation {  //when "upgrading" this cl
     
     @NSManaged var latitude: Double
     @NSManaged var longitude: Double
+    
+    //the title and subtitle properties were included in the PinAnnotation class as part of the MKAnnotation protocol, more for completeness than anything (as neither are not required properties for the protocol); neither property was used in this project, but instead of deleting these from the class, i kept them for the purpose of possible expansion at a later time; for the time being, each PinAnnoation object is initialized with title and subtitle as nil
     @NSManaged var title: String?
     @NSManaged var subtitle: String?
     @NSManaged var photos: [Photo]?
