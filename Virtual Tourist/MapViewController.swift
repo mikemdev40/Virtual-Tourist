@@ -20,6 +20,7 @@ class MapViewController: UIViewController {
     
     //MARK: Properties
     var activeAnnotation: PinAnnotation!
+    var lastPinTapped: MKPinAnnotationView?
     var pointPressed = CGPoint()
     var coordinate = CLLocationCoordinate2D()
     var initiallyLoaded = false //variable which is set to true on initial loading of the user's saved map region, thus preventing unnecessary loading of a user's saved map region each time the user returns from the photo album controller
@@ -170,15 +171,16 @@ class MapViewController: UIViewController {
                 callAlert("Error", message: "There was an error removing the pin.", alertHandler: nil, presentationCompletionHandler: nil)
             }
         }
+        setupToolbar(.Message)
     }
     
     func setupToolbar(buttonToShow: ButtonType) {
         switch buttonToShow {
         case .Message:
-            setToolbarItems([spacerButton, displayMessage, spacerButton], animated: true)
+            setToolbarItems([spacerButton, displayMessage, spacerButton], animated: false)
             navigationController?.toolbar.barTintColor = nil
         case .DeletePin:
-            setToolbarItems([spacerButton, removePinButton, spacerButton], animated: true)
+            setToolbarItems([spacerButton, removePinButton, spacerButton], animated: false)
             navigationController?.toolbar.barTintColor = UIColor(red: 255/255, green: 168/255, blue: 168/255, alpha: 1)
         }
     }
@@ -213,6 +215,7 @@ class MapViewController: UIViewController {
             navigationController?.setToolbarHidden(false, animated: true)
         } else {
             navigationController?.setToolbarHidden(true, animated: true)
+            lastPinTapped?.pinTintColor = MKPinAnnotationView.redPinColor()
         }
     }
     
@@ -239,7 +242,8 @@ class MapViewController: UIViewController {
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-
+        
+        lastPinTapped = nil
     }
     
     //the loading of a user's saved map zoom/pan/location setting is performed in viewDIDappear rather than viewWILLappear because the map gets initially set to an app-determined location and regionDidChangeAnimated method gets called in BETWEEN viewWillAppear and viewDidAppear (and this initial location is NOT related to the loaded/saved location), so the code to load a user's saved preferences is delayed until now so that the saved location is loaded AFTER the app pre-sets the map, rather then before (and thus being overwritten, or "shifted" to a different location); it is ensured that the initial auotmatica "pre-set" region of the map is not saved as a user-based save (thus overwriting a user's save) via the mapViewRegionDidChangeFromUserInteraction method, which checks to make sure that when regionDidChangeAnimated is invoked, it is in response to user-generated input
@@ -280,7 +284,6 @@ extension MapViewController: MKMapViewDelegate {
     }
 
     func mapView(mapView: MKMapView, didDeselectAnnotationView view: MKAnnotationView) {
-        print("deselected")
         (view as! MKPinAnnotationView).pinTintColor = MKPinAnnotationView.redPinColor()
         
         if userTappedMapNotPin {
@@ -289,7 +292,8 @@ extension MapViewController: MKMapViewDelegate {
     }
     
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
-        print("selected")
+        lastPinTapped = view as? MKPinAnnotationView
+        
         if editing {
             setupToolbar(.DeletePin)
             activeAnnotation = view.annotation as? PinAnnotation
