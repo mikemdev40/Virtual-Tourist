@@ -189,9 +189,11 @@ class PhotoAlbumViewController: UIViewController {
     func setupToolbar(buttonToShow: ButtonType) {
         switch buttonToShow {
         case .NewCollection:
-            setToolbarItems([spacerButton, getNewCollectionButton, spacerButton], animated: true)
+            setToolbarItems([spacerButton, getNewCollectionButton, spacerButton], animated: false)
+            navigationController?.toolbar.barTintColor = nil
         case .DeleteImages:
-            setToolbarItems([spacerButton, removePicturesButton, spacerButton], animated: true)
+            setToolbarItems([spacerButton, removePicturesButton, spacerButton], animated: false)
+            navigationController?.toolbar.barTintColor = UIColor(red: 255/255, green: 168/255, blue: 168/255, alpha: 1)
         }
     }
     
