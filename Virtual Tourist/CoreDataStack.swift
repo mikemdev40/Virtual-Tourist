@@ -44,27 +44,27 @@ class CoreDataStack {
     }()
     
     func savePhotosToPin(photoDataToSave: [[String : AnyObject]], pinToSaveTo: PinAnnotation, maxNumberToSave: Int) {
-        
-        
-        
-        //TODO: SHUFFLE!!!!!!!!!!
 
+        var photoDataToSaveMutable = photoDataToSave
+
+        if photoDataToSave.count > Constants.MapViewConstants.MaxNumberOfPhotosToSavePerPin {
+            
+            photoDataToSaveMutable.shuffle() //see Array extension in the Constants file for this method; this is used to shuffle the array of photos (since it contains many more than needed), so that the user is getting a random set of photos from whatever page of image results gets returned from flickr; this is more important for locations that return fewer results (because locations with lots of pages of image results will already be somewhat randomized when a random page number is used to extract the images from)
+            print("Shuffled!!")
+        }
         
-        
-        if photoDataToSave.count > maxNumberToSave {
+        if photoDataToSaveMutable.count > maxNumberToSave {
             for photoNum in 0...(maxNumberToSave - 1) {
-                if let imgURL = photoDataToSave[photoNum]["url_m"] as? String, let photoID = photoDataToSave[photoNum]["id"] as? String {
+                if let imgURL = photoDataToSaveMutable[photoNum]["url_m"] as? String, let photoID = photoDataToSaveMutable[photoNum]["id"] as? String {
                     let newPhoto = Photo(photoID: photoID, flickrURL: imgURL, context: managedObjectContect)
                     newPhoto.pin = pinToSaveTo
-                    print("max hit: \(imgURL)")
                 }
             }
         } else {
-            for photo in photoDataToSave {
+            for photo in photoDataToSaveMutable {
                 if let imgURL = photo["url_m"] as? String, let photoID = photo["id"] as? String {
                     let newPhoto = Photo(photoID: photoID, flickrURL: imgURL, context: managedObjectContect)
                     newPhoto.pin = pinToSaveTo
-                    print("all used: \(imgURL)")
                 }
             }
         }

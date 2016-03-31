@@ -12,12 +12,19 @@ import CoreData
 
 class MapViewController: UIViewController {
     
+    //MARK: -------- TYPES --------
+    enum ButtonType {
+        case Message
+        case DeletePin
+    }
+    
     //MARK: Properties
     var activeAnnotation: PinAnnotation!
     var pointPressed = CGPoint()
     var coordinate = CLLocationCoordinate2D()
     var initiallyLoaded = false //variable which is set to true on initial loading of the user's saved map region, thus preventing unnecessary loading of a user's saved map region each time the user returns from the photo album controller
     var imageFetchExecuting = false
+    var editMode = false
     
     //Set up the longpress gesture recognizer when the map view outlet gets set
     @IBOutlet weak var mapView: MKMapView! {
@@ -34,6 +41,11 @@ class MapViewController: UIViewController {
     var sharedContext: NSManagedObjectContext {
         return CoreDataStack.sharedInstance.managedObjectContect
     }
+    
+    //button properties for the toolbar
+    var removePinButton: UIBarButtonItem!
+    var displayMessage: UIBarButtonItem!
+    var spacerButton = UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: nil)
     
     //MARK: Custom Methods
     
@@ -149,7 +161,26 @@ class MapViewController: UIViewController {
     }
     
     func removePinFromMap() {
-        print("EDIT MODE")
+        if let annotationToDelete = activeAnnotation {
+            sharedContext.deleteObject(annotationToDelete)
+            do {
+                try sharedContext.save()
+                mapView.removeAnnotation(annotationToDelete)
+            } catch {
+                callAlert("Error", message: "There was an error removing the pin.", alertHandler: nil, presentationCompletionHandler: nil)
+            }
+        }
+    }
+    
+    func setupToolbar(buttonToShow: ButtonType) {
+        switch buttonToShow {
+        case .Message:
+            setToolbarItems([spacerButton, displayMessage, spacerButton], animated: true)
+            navigationController?.toolbar.barTintColor = nil
+        case .DeletePin:
+            setToolbarItems([spacerButton, removePinButton, spacerButton], animated: true)
+            navigationController?.toolbar.barTintColor = UIColor(red: 255/255, green: 168/255, blue: 168/255, alpha: 1)
+        }
     }
     
     //MARK: View Controller Methods
@@ -173,14 +204,29 @@ class MapViewController: UIViewController {
         }
     }
     
+    override func setEditing(editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: true)
+        
+        setupToolbar(.Message)
+
+        if editing {
+            navigationController?.setToolbarHidden(false, animated: true)
+        } else {
+            navigationController?.setToolbarHidden(true, animated: true)
+        }
+    }
+    
     //MARK: View Controller Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         title = "Virtual Tourist"
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Edit, target: self, action: #selector(MapViewController.removePinFromMap))
+        navigationItem.rightBarButtonItem = editButtonItem()
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "Back", style: .Plain, target: nil, action: nil)  //enables a custom back button so that "Back" is shown instead of "Virtual Tourist" (could have done this in the storyboard also by adjusting the navigation item's back button value)
+        
+        displayMessage = UIBarButtonItem(title: "Select a pin to delete", style: .Plain, target: self, action: nil)
+        removePinButton = UIBarButtonItem(barButtonSystemItem: .Trash, target: self, action: #selector(MapViewController.removePinFromMap))
     }
     
     override func viewWillAppear(animated: Bool) {
@@ -225,11 +271,28 @@ extension MapViewController: MKMapViewDelegate {
         return annotationView
     }
 
-    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
-        performSegueWithIdentifier(Constants.MapViewConstants.ShowPhotoAlbumSegue, sender: view)
+    func mapView(mapView: MKMapView, didDeselectAnnotationView view: MKAnnotationView) {
+        print("deselected")
+        (view as! MKPinAnnotationView).pinTintColor = MKPinAnnotationView.redPinColor()
         
-        //the following sets the annotation back to "not selected" so it is possible to re-tap on it again after returning from the photo album view; this is necessary because when an annotation is first tapped, it's registered as "selected" and stays that way, so when trying to tap on it again after returning from the photo album view, it doesn't call the "didSelectAnnotationView" delegate method because technically it is already selected!  thank you stackoverflow for this insight and resolution: http://stackoverflow.com/questions/26620672/mapview-didselectannotationview-not-functioning-properly
-        mapView.deselectAnnotation(view.annotation, animated: true)
+        if mapView.selectedAnnotations.count == 0 {
+            setupToolbar(.Message)
+        }
+    }
+    
+    func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        
+        if editing {
+            setupToolbar(.DeletePin)
+            activeAnnotation = view.annotation as? PinAnnotation
+            (view as! MKPinAnnotationView).pinTintColor = MKPinAnnotationView.purplePinColor()
+        } else {
+        
+            performSegueWithIdentifier(Constants.MapViewConstants.ShowPhotoAlbumSegue, sender: view)
+            
+            //the following sets the annotation back to "not selected" so it is possible to re-tap on it again after returning from the photo album view; this is necessary because when an annotation is first tapped, it's registered as "selected" and stays that way, so when trying to tap on it again after returning from the photo album view, it doesn't call the "didSelectAnnotationView" delegate method because technically it is already selected!  thank you stackoverflow for this insight and resolution: http://stackoverflow.com/questions/26620672/mapview-didselectannotationview-not-functioning-properly
+            mapView.deselectAnnotation(view.annotation, animated: true)
+        }
     }
     
     //TODO:  enable dragging; CODE BELOW NEVER RUNS BECAUSE A "GRAB" on the pin registers the didSelectAnnotationView rather than as a grab
