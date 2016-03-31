@@ -47,10 +47,6 @@ class Photo: NSManagedObject {
     }
     
     override func prepareForDeletion() {
-        if ImageFileManager.sharedInstance.deleteImageFromDisk(photoURLonDisk, checkCacheForURL: flickrURL) {
-            print("deleted successfully")
-        } else {
-            print("PROBLEM deleting")
-        }
+        ImageFileManager.sharedInstance.deleteImageFromDisk(photoURLonDisk, checkCacheForURL: flickrURL)
     }
 }

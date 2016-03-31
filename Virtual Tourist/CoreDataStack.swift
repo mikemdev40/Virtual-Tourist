@@ -39,7 +39,6 @@ class CoreDataStack {
             fatalError("Error adding persistent store")
         }
         
-        print("Core Data Stack loaded successfully")
         return context
     }()
     
@@ -50,7 +49,6 @@ class CoreDataStack {
         if photoDataToSave.count > Constants.MapViewConstants.MaxNumberOfPhotosToSavePerPin {
             
             photoDataToSaveMutable.shuffle() //see Array extension in the Constants file for this method; this is used to shuffle the array of photos (since it contains many more than needed), so that the user is getting a random set of photos from whatever page of image results gets returned from flickr; this is more important for locations that return fewer results (because locations with lots of pages of image results will already be somewhat randomized when a random page number is used to extract the images from)
-            print("Shuffled!!")
         }
         
         if photoDataToSaveMutable.count > maxNumberToSave {
@@ -71,9 +69,7 @@ class CoreDataStack {
 
         do {
             try managedObjectContect.save()
-        } catch {
-            print("error saving photos")
-        }
+        } catch { }
     }
     
     private init() {}

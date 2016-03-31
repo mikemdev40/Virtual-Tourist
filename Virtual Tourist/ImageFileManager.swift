@@ -29,7 +29,6 @@ class ImageFileManager {
         guard let photo = photoToSave, let photoURL = photoURLonDisk else {
             return
         }
-        print("save photo to disk")
         
 //        imageCache.setObject(photo, forKey: photoURL)
         
@@ -40,7 +39,6 @@ class ImageFileManager {
     
     func retrieveImageFromDisk(photoURLonDisk: String?, checkCacheForURL: String?) -> UIImage? {
         guard let photoURLonDisk = photoURLonDisk else {
-            print("photourl nil")
             return nil
         }
         
@@ -48,7 +46,6 @@ class ImageFileManager {
         if let checkCacheForURL = checkCacheForURL {
             if let nsURL = NSURL(string: checkCacheForURL)  {
                 if let cachedData = NSURLCache.sharedURLCache().cachedResponseForRequest(NSURLRequest(URL: nsURL)) {
-                    print("THERE IS CACHED DATA WITH THIS URL!")
                     if let photoFromCachedData = UIImage(data: cachedData.data) {
                         return photoFromCachedData
                     }
@@ -57,42 +54,35 @@ class ImageFileManager {
         }
         
 //        if let photoImage = imageCache.objectForKey(photoURLonDisk) as? UIImage {
-//            print("cache")
 //            return photoImage
 //        }
         
         if let photoData = NSData(contentsOfFile: photoURLonDisk) {
-            print("nsdata")
             if let photo = UIImage(data: photoData) {
 //                imageCache.setObject(photo, forKey: photoURLonDisk)  //saves it to cache once it is loaded from the hard drive the first time
                 return photo
             }
         }
         
-        print("none")
         return nil
     }
     
-    func deleteImageFromDisk(photoURL: String?, checkCacheForURL: String?) -> Bool {
+    func deleteImageFromDisk(photoURL: String?, checkCacheForURL: String?) {
         guard let photoURL = photoURL else {
-            return false
+            return
         }
 
         //ADDED to take advantage of automatic caching that happens with URL requests!
         if let checkCacheForURL = checkCacheForURL {
             if let nsURL = NSURL(string: checkCacheForURL)  {
                 NSURLCache.sharedURLCache().removeCachedResponseForRequest(NSURLRequest(URL: nsURL))
-                print("ITEM REMOVED FROM CACHE!!")
             }
         }
 //        imageCache.removeObjectForKey(photoURL)
         
         do {
             try fileManager.removeItemAtPath(photoURL)
-            return true
-        } catch {
-            return false
-        }
+        } catch { }
     }
     
     private init() {}

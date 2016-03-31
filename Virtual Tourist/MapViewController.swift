@@ -70,10 +70,7 @@ class MapViewController: UIViewController {
             updatePinLocatin(gesture)
             do {
                 try sharedContext.save()
-            } catch {
-                print("error saving pin")
-            }
-            lookUpLocation(activeAnnotation)
+            } catch { }
             getPhotosAtLocation(activeAnnotation.coordinate)
         default:
             break
@@ -110,26 +107,6 @@ class MapViewController: UIViewController {
         }
     }
     
-    ///method that determines a string-based location for the user's pin using reverse geocoding
-    func lookUpLocation(annotation: MKAnnotation) {  //i put the argument here as MKAnnotation rather than MKPointAnnotation just to keep the function more resusable! it just as easily have been MKPointAnnoation, in which case the downcast that happens in the completion closure below would not have been necessary
-        let geocoder = CLGeocoder()
-        
-        let location = CLLocation(latitude: annotation.coordinate.latitude, longitude: annotation.coordinate.longitude)
-        geocoder.reverseGeocodeLocation(location) { (placemarksArray, error) in
-            if let error = error {
-            //TODO: Add a display alert method and print error to display alert
-                print(error.localizedDescription)
-            } else if let placemarks = placemarksArray {
-                let place = placemarks[0].locality
-                if let pointAnnotation = annotation as? MKPointAnnotation {  //note that is necessary to first downcast the annotation as an MKPointAnnotation since the title property would otherwise not be settable
-                    dispatch_async(dispatch_get_main_queue()) {
-                        pointAnnotation.title = place
-                    }
-                }
-            }
-        }
-    }
-    
     func callAlert(title: String, message: String, alertHandler: ((UIAlertAction) -> Void)?, presentationCompletionHandler: (() -> Void)?) {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
         alertController.addAction(UIAlertAction(title: "OK", style: .Default, handler: alertHandler))
@@ -156,7 +133,6 @@ class MapViewController: UIViewController {
         do {
             return try sharedContext.executeFetchRequest(fetchRequest) as! [PinAnnotation]
         } catch {
-            print("error loading")
             return [PinAnnotation]()
         }
     }
@@ -191,13 +167,12 @@ class MapViewController: UIViewController {
         if segue.identifier == Constants.MapViewConstants.ShowPhotoAlbumSegue {
             if let destinationViewController = segue.destinationViewController as? PhotoAlbumViewController, let senderAnnotationView = sender as? MKAnnotationView {
                 if let annotation = senderAnnotationView.annotation as? PinAnnotation {
-                    print("loaded annotation")
+                    
                     destinationViewController.annotationToShow = annotation
                     
                     if imageFetchExecuting {
                         destinationViewController.isStillLoadingText = "Retrieving Images..."
                     }
-                    
                     if let title = annotation.title {
                         destinationViewController.localityName = title
                     }

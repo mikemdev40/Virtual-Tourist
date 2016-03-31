@@ -175,7 +175,6 @@ class PhotoAlbumViewController: UIViewController {
             dispatch_async(dispatch_get_main_queue()) {
                 do {
                     try self.sharedContext.save()
-                    print("SUCCESSFUL RE-SAVE")
                 } catch let error as NSError {
                     self.callAlert("Error", message: error.localizedDescription, alertHandler: nil, presentationCompletionHandler: nil)
                 }
@@ -295,7 +294,6 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
        
         if let photoImage = photoObjectToDisplay.photoImage {
             cell.imageView.image = photoImage
-            print("photo loaded")
         } else {
             cell.spinner.startAnimating()
             FlickrClient.sharedInstance.getImageForUrl(photoObjectToDisplay.flickrURL, completionHandler: { (data, error) in
@@ -306,7 +304,6 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
                 if let photoData = data {
                     let photo = UIImage(data: photoData)
                     dispatch_async(dispatch_get_main_queue()) {
-                        print("photo DOWNLOADED")
                         cell.imageView.image = photo
                         photoObjectToDisplay.photoImage = photo
                         cell.spinner.stopAnimating()
@@ -325,7 +322,6 @@ extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDa
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
         
-        print("did select item")
         let selectedCell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCollectionViewCell
         
         if let index = selectedIndexPaths.indexOf(indexPath) {
@@ -353,19 +349,18 @@ extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
         switch type {
             
         case .Insert:
-            print("insert")
             insertedIndexPaths.append(newIndexPath!)
         case .Delete:
-            print("delete")
             deletedIndexPaths.append(indexPath!)
-        case .Update:
-            print("update")
+        case .Update:  //not used
+            break
         default:
             break
         }
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
+        
         collectionView.performBatchUpdates({ [unowned self] in
                 for indexPath in self.insertedIndexPaths {
                     self.collectionView.insertItemsAtIndexPaths([indexPath])
@@ -373,11 +368,8 @@ extension PhotoAlbumViewController: NSFetchedResultsControllerDelegate {
                 for indexPath in self.deletedIndexPaths {
                     self.collectionView.deleteItemsAtIndexPaths([indexPath])
                 }
-            }) { (bool) in
-                print("COMPLETE")
-        }
+            }, completion: nil)
     }
-    
 }
 
 //MARK: -------- MAPVIEW DELEGATE METHODS --------

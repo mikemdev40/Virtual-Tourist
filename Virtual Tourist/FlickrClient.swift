@@ -43,13 +43,10 @@ class FlickrClient {
             }
             
             if numPages > Constants.FlickrClientConstants.FlickrAPI.MaxNumberPagesThatReturnResults {  //checks to see if the number of pages returned is more than 4 (see constants for why), and if so, finds a random page number between 1 and 4 and re-executes the image request with that specific page number
-                print("max pages \(numPages)")
                 let randomPageNumberFromResults = Int(1 + arc4random_uniform(UInt32(Constants.FlickrClientConstants.FlickrAPI.MaxNumberPagesThatReturnResults)))
                 self.executeFlickrSearchForPageNumber(latitude, longitude: longitude, optionalPageNumber: randomPageNumberFromResults, completionHandler: completionHandler)
                 
             } else if numPages > Constants.FlickrClientConstants.FlickrAPI.MinPagesInResultBeforeResubmitting {  //checks to see if the number of pages returned is more than 2, and if so, finds a random page number between 1 and that number and re-executes the image request with that specific page number - 1; the reason for minus 1 is because there is a chance that the last page of results (which is known at this point to be either 1, 2, 3, or 4, but not greater than 4) contains only a handful of results (e.g. a photo return of 760 would be spread out across 4 pages like 250, 250, 250, 10; if page 4 got selected and run, there wouldnt be enough to make up the min number of images for the colletcion view, which is undesirable!  the reason that numPages is being compared to the "MinPagesInResultBeforeResubmitting" constant (set to 2) is for that exact same reason -- if the number of pages in the result IS exaclty 2, then there is a chance that the second page only has a handful, so in this case, we will always be getting images from the first page
-                
-                print("min pages \(numPages)")
                 
                 let randomPageNumberFromResults = Int(1 + arc4random_uniform(UInt32(numPages - 1))) //example: if there are four pages (numPages = 4), then this would return a random number out of 1, 2, and 3, since arc4random returns a random number from 0 up to (argument minus 1), which would be 0, 1, or 2, and then plus 1 makes that 1, 2, and 3.
                 
@@ -57,7 +54,6 @@ class FlickrClient {
                 
             } else {
             
-                print("no rerun \(numPages)")
                 guard let photo = photos["photo"] as? [NSDictionary] else {
                     completionHandler(success: false, photoArray: nil, error: "There was an error parsing out the array.")
                     return
@@ -108,7 +104,6 @@ class FlickrClient {
             
             //if data retrieval is successful, the results are passed back to the original caller through the passed in completion handler
             if let photoArray = photo as? [[String: AnyObject]] {
-                print("SUCCESS!!! grabbed from page \(optionalPageNumber)")
                 completionHandler(success: true, photoArray: photoArray, error: nil)
             } else {
                 completionHandler(success: false, photoArray: nil, error: "There was an error casting to array.")
@@ -188,7 +183,6 @@ class FlickrClient {
         
         NSURLFromComponents.queryItems = queryItems
         
-        print(NSURLFromComponents.URL!)
         return NSURLFromComponents.URL!
     }
     
