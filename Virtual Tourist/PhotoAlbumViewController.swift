@@ -251,7 +251,7 @@ class PhotoAlbumViewController: UIViewController {
     }
 }
 
-//MARK: -------- COLLECTION VIEW DELEGATE & DATASOURCE METHODS --------
+//MARK: -------- COLLECTION VIEW DATASOURCE & DELEGATE METHODS --------
 
 extension PhotoAlbumViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
