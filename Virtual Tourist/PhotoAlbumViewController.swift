@@ -25,7 +25,6 @@ class PhotoAlbumViewController: UIViewController {
     }
     
     //properties that are set by the segued-from view controller
-    var localityName: String?
     var annotationToShow: PinAnnotation!
     var isStillLoadingText: String? {
         didSet {
@@ -238,7 +237,7 @@ class PhotoAlbumViewController: UIViewController {
         mapView.region = MKCoordinateRegion(center: annotationToShow.coordinate, span: MKCoordinateSpan(latitudeDelta: SpanDeltaLatitude, longitudeDelta: Constants.PhotoAlbumConstants.SpanDeltaLongitude))
         mapView.addAnnotation(annotationToShow)
         
-        if localityName != nil {
+        if let localityName = annotationToShow.title {
             title = localityName
         } else {
             title = "Photos"

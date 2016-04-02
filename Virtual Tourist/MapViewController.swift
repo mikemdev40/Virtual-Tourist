@@ -13,14 +13,16 @@ import CoreData
 class MapViewController: UIViewController {
     
     //MARK: -------- TYPES --------
+    //this type is used to distinguish between two different states of the toolbar and toolbar button that appears when the "edit" button is tapped
     enum ButtonType {
         case Message
         case DeletePin
     }
     
-    //MARK: Properties
-    var activeAnnotation: PinAnnotation!
-    var lastPinTapped: MKPinAnnotationView?
+    //MARK: -------- PROPERTIES --------
+    var temporaryAnnotation: MKPointAnnotation!
+    var activeAnnotation: PinAnnotation!  //used to track the currently (or last) selected annotation
+    var lastPinTapped: MKPinAnnotationView?  //used to track the last annotation view that was tapped (used when toggling the color of the pin between red and purple when in edit mode)
     var pointPressed = CGPoint()
     var coordinate = CLLocationCoordinate2D()
     var initiallyLoaded = false //variable which is set to true on initial loading of the user's saved map region, thus preventing unnecessary loading of a user's saved map region each time the user returns from the photo album controller
@@ -48,30 +50,40 @@ class MapViewController: UIViewController {
     var displayMessage: UIBarButtonItem!
     var spacerButton = UIBarButtonItem(barButtonSystemItem: .FlexibleSpace, target: nil, action: nil)
     
-    //MARK: Custom Methods
+    //MARK: -------- CUSTOM METHODS --------
     
     ///method that gets called when the long press gesture recognizer registers a long press; this function places an annotation view as soon as the long press begins, but immediately moves to the .changed state in which the location gets updated with the finger scroll (allowing the pin to move with the finger).
     func dropPin(gesture: UIGestureRecognizer) {
         
         switch gesture.state {
         case .Began:
-            let coordinate = mapView.convertPoint(gesture.locationInView(mapView), toCoordinateFromView: mapView)
-            let newAnnotation = PinAnnotation(latitude: coordinate.latitude, longitude: coordinate.longitude, title: nil, subtitle: nil, context: sharedContext)
-            activeAnnotation = newAnnotation
-            updatePinLocatin(gesture)
-            newAnnotation.latitude = coordinate.latitude
-            newAnnotation.longitude = coordinate.longitude
-            mapView.addAnnotation(newAnnotation)
+            coordinate = mapView.convertPoint(gesture.locationInView(mapView), toCoordinateFromView: mapView)
+            temporaryAnnotation = MKPointAnnotation()
+            mapView.addAnnotation(temporaryAnnotation)
+            temporaryAnnotation.coordinate = coordinate
+            
         case .Changed: //need to include .Changed so that the pin will move along with the finger drag
             updatePinLocatin(gesture)
-            activeAnnotation.latitude = coordinate.latitude
-            activeAnnotation.latitude = coordinate.longitude
+            temporaryAnnotation.coordinate = coordinate
+
         case .Ended:
             updatePinLocatin(gesture)
+            
+            let newAnnotation = PinAnnotation(latitude: coordinate.latitude, longitude: coordinate.longitude, title: nil, subtitle: nil, context: sharedContext)
+            activeAnnotation = newAnnotation
+            activeAnnotation.latitude = coordinate.latitude
+            activeAnnotation.longitude = coordinate.longitude
+            
+            mapView.addAnnotation(activeAnnotation)
+            mapView.removeAnnotation(temporaryAnnotation)
+
+            lookUpLocation(activeAnnotation)
+            
             do {
                 try sharedContext.save()
             } catch { }
             getPhotosAtLocation(activeAnnotation.coordinate)
+            
         default:
             break
         }
@@ -79,8 +91,7 @@ class MapViewController: UIViewController {
     
     ///method that was created to reduce redundant code; the convertPoint doesn't actally convert a location (since the convertPoint is occurring on the same view that it is converting to! however, it is still needed because it performs the role of converting the pointPressed, which is a CGpoint, to a CLLocationCoordinate2D, which is the type required in order to add it to the map view.
     func updatePinLocatin(gesture: UIGestureRecognizer) {
-        pointPressed = gesture.locationInView(mapView)
-        coordinate = mapView.convertPoint(pointPressed, toCoordinateFromView: mapView)
+        coordinate = mapView.convertPoint(gesture.locationInView(mapView), toCoordinateFromView: mapView)
     }
     
     func getPhotosAtLocation(coordinate: CLLocationCoordinate2D) {
@@ -161,21 +172,33 @@ class MapViewController: UIViewController {
         }
     }
     
-    //MARK: View Controller Methods
+    ///method that determines a string-based location for the user's pin using reverse geocoding
+    func lookUpLocation(annotation: MKAnnotation) {  //i put the argument here as MKAnnotation rather than MKPointAnnotation just to keep the function more resusable! it just as easily have been MKPointAnnoation, in which case the downcast that happens in the completion closure below would not have been necessary
+        let geocoder = CLGeocoder()
+        
+        let location = CLLocation(latitude: annotation.coordinate.latitude, longitude: annotation.coordinate.longitude)
+        geocoder.reverseGeocodeLocation(location) { [unowned self] (placemarksArray, error) in
+            if let placemarks = placemarksArray {
+                dispatch_async(dispatch_get_main_queue(), {
+                    self.activeAnnotation.title = placemarks[0].locality
+                    do {
+                        try self.sharedContext.save()
+                    } catch { }
+                })
+            }
+        }
+    }
+    
+    //MARK: -------- VIEW CONTROLLER METHODS --------
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == Constants.MapViewConstants.ShowPhotoAlbumSegue {
-            if let destinationViewController = segue.destinationViewController as? PhotoAlbumViewController, let senderAnnotationView = sender as? MKAnnotationView {
-                if let annotation = senderAnnotationView.annotation as? PinAnnotation {
-                    
-                    destinationViewController.annotationToShow = annotation
-                    
-                    if imageFetchExecuting {
-                        destinationViewController.isStillLoadingText = "Retrieving Images..."
-                    }
-                    if let title = annotation.title {
-                        destinationViewController.localityName = title
-                    }
+            if let destinationViewController = segue.destinationViewController as? PhotoAlbumViewController {
+                
+                destinationViewController.annotationToShow = activeAnnotation
+
+                if imageFetchExecuting {
+                    destinationViewController.isStillLoadingText = "Retrieving Images..."
                 }
             }
         }
@@ -203,7 +226,7 @@ class MapViewController: UIViewController {
         }
     }
     
-    //MARK: View Controller Lifecycle
+    //MARK: -------- VIEW CONTROLLER LIFECYCLE --------
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -241,7 +264,7 @@ class MapViewController: UIViewController {
     }
 }
 
-//MAPVIEW DELEGATE METHODS
+//MARK: -------- MAPVIEW DELEGATE METHODS --------
 
 extension MapViewController: MKMapViewDelegate {
     
@@ -268,11 +291,16 @@ extension MapViewController: MKMapViewDelegate {
     }
     
     func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+        
+        guard view.annotation as? PinAnnotation != nil else {
+            return
+        }
+        
         lastPinTapped = view as? MKPinAnnotationView
+        activeAnnotation = view.annotation as? PinAnnotation
         
         if editing {
             setupToolbar(.DeletePin)
-            activeAnnotation = view.annotation as? PinAnnotation
             (view as! MKPinAnnotationView).pinTintColor = MKPinAnnotationView.purplePinColor()
         } else {
         
@@ -284,14 +312,6 @@ extension MapViewController: MKMapViewDelegate {
         
         
     }
-    
-    //TODO:  enable dragging; CODE BELOW NEVER RUNS BECAUSE A "GRAB" on the pin registers the didSelectAnnotationView rather than as a grab
-//    func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
-//        print("did change state")
-//        if newState == .Ending {
-//            print("grabbed and moved to \(view.annotation?.coordinate)")
-//        }
-//    }
     
     func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         
