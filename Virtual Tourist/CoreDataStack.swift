@@ -11,13 +11,13 @@ import CoreData
 
 class CoreDataStack {
     
+    //singleton object for instantiating only a single core data stack
     static let sharedInstance = CoreDataStack()
-    
     
     //lazily initialized managed object context (lazy because it allows us to intialize and attach all the various prerequisite pieces of the object context, all bundled up nearly into one property); importantly, it is practical to initialize all the required pieces of the context within a lazy variable (i.e. not accessible as part of the CoreDataStack class) because of all the components of the core data stack, the NSManagedObjectContext is the ONLY component of this process that this app will ever need to directly access
     lazy var managedObjectContect: NSManagedObjectContext = {
         
-        //part of this coding block inspired by the Core Data Programming Guide: https://developer.apple.com/library/tvos/documentation/Cocoa/Conceptual/CoreData/InitializingtheCoreDataStack.html#//apple_ref/doc/uid/TP40001075-CH4-SW1
+        //NOTE: part of this coding block inspired by the Core Data Programming Guide: https://developer.apple.com/library/tvos/documentation/Cocoa/Conceptual/CoreData/InitializingtheCoreDataStack.html#//apple_ref/doc/uid/TP40001075-CH4-SW1
         
         //gets the URL for where the core data model file is located within the app's bundle (the "Model.xcdatamodeld" file)
         guard let modelURL = NSBundle.mainBundle().URLForResource("Model", withExtension: "momd") else {

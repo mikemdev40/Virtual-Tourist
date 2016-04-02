@@ -28,10 +28,12 @@ class Photo: NSManagedObject {
     //computed property that, when accessed during collection view cell configuration, returns the saved value from the disk or returns nil; if this property returns nil when the cell calls for it, the cell congifuration then starts the downloading of the image which is then followed by setting this property equal to the freshly downladed image, thus invoking the setter observer below and the saving of the image to disk (and cache), which then leads to subsequent "get" calls to this property to return a non-nil image
     var photoImage: UIImage? {
         get {
-            return ImageFileManager.sharedInstance.retrieveImageFromDisk(photoURLonDisk, checkCacheForURL: flickrURL)  //the "checkCacheForURL" argument is simply the web URL of the image, since the cache used in this project is the built-in caching mechanism that comes with the NSURL class, which utilizes the NSURLCache.sharedURLCache() instance and saves cache data based on the URL from which the object was downloaded
+            //the "checkCacheForURL" argument is simply the web URL of the image, since the cache used in this project is the built-in caching mechanism that comes with the NSURL class, which utilizes the NSURLCache.sharedURLCache() instance and saves cache data based on the URL from which the object was downloaded
+            return ImageFileManager.sharedInstance.retrieveImageFromDisk(photoURLonDisk, checkCacheForURL: flickrURL)
         }
         set {
-            ImageFileManager.sharedInstance.saveImageToDisk(newValue, photoURLonDisk: photoURLonDisk)  //the photo being save (newvalue) is being passed along wih the computed URL for the image on the disk, and the image is then saved to files directory; the photos are set explicitly within the PhotoAlbumViewController class
+            //the photo being save (newvalue) is being passed along wih the computed URL for the image on the disk, and the image is then saved to files directory; the photos are set explicitly within the PhotoAlbumViewController class
+            ImageFileManager.sharedInstance.saveImageToDisk(newValue, photoURLonDisk: photoURLonDisk)
         }
     }
     

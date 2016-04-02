@@ -12,7 +12,8 @@ import UIKit
 //class that manages the saving and reading of photo images from the file system and image cache (which is implemented via the NSURLCache.sharedURLCache object)
 class ImageFileManager {
     
-    static let sharedInstance = ImageFileManager()  //singleton object for instantiating only a single client
+    //singleton object for instantiating only a single client
+    static let sharedInstance = ImageFileManager()
     
     /* --- line below UNUSED (i want to retain this line as a comment for personal future review)
       private var imageCache = NSCache()

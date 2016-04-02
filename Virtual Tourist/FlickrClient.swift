@@ -11,7 +11,8 @@ import Foundation
 //client class that is responsible for performing all Flickr-related data tasks, including constructing URLs for interacting with FLickr's API, executing Flickr searches for images, retrieving the specific image file associated with each search result, and parsing all JSON data
 class FlickrClient {
     
-    static let sharedInstance = FlickrClient()  //singleton object for instantiating only a single client
+    //singleton object for instantiating only a single client
+    static let sharedInstance = FlickrClient()
     
     ///this method executes a geo-based Flickr search using the latitude and longitude of the pin dropped by the user and returns the photo data via a passed completion handler as an array of dictionaries; this method is invoked in two places in the app: when the user first drops a pin (the request gets fired off immediately as soon as the pin is placed and returned asynchronously) and when the user taps the "get new collection" button within the photo album view controller
     func executeGeoBasedFlickrSearch(latitude: Double, longitude: Double, completionHandler: (success: Bool, photoArray: [[String: AnyObject]]?, error: String?) -> Void) {
@@ -57,10 +58,11 @@ class FlickrClient {
             //else, we check to see if the number of pages returned is more than 2 (explained shortly), and if so, finds a random page number between 1 and that number and re-executes the image request with that specific page number minus 1; the reason for minus 1 is because there is a chance that the last page of results (which is known at this point to be either 1, 2, 3, or 4, but not greater than 4) contains only a handful of results (e.g. a photo return of 760 would be spread out across 4 pages like 250, 250, 250, 10; if page 4 got selected and results returned, there wouldnt be enough to make up the min number of images for the colletcion view, which is undesirable!).  the reason that numPages is being compared to the "MinPagesInResultBeforeResubmitting" constant (set to 2) is for that exact same reason -- if the number of pages in the result IS 2 (exactly), then there is a chance that the second page only has a handful, so in this case, we will always be getting images from the first page; there may be other ways to optimize this, but i also don't want to make more than two chained, successive API calls unless absolutely necessary!
             } else if numPages > Constants.FlickrClientConstants.FlickrAPI.MinPagesInResultBeforeResubmitting {
                 
-                let randomPageNumberFromResults = Int(1 + arc4random_uniform(UInt32(numPages - 1))) //picks a random page number from the number of pages; example: if there are four pages (numPages = 4), then this would return a random number out of 1, 2, and 3, since arc4random returns a random number from 0 up to (argument minus 1), which would be 0, 1, or 2, and then plus 1 makes that 1, 2, and 3.
+                //picks a random page number from the number of pages; example: if there are four pages (numPages = 4), then this would return a random number out of 1, 2, and 3, since arc4random returns a random number from 0 up to (argument minus 1), which would be 0, 1, or 2, and then plus 1 makes that 1, 2, and 3.
+                let randomPageNumberFromResults = Int(1 + arc4random_uniform(UInt32(numPages - 1)))
                 
-                self.executeFlickrSearchForPageNumber(latitude, longitude: longitude, optionalPageNumber: randomPageNumberFromResults, completionHandler: completionHandler)  //note the addition of the optionalPageNumber parameter
-                
+                //note the addition of the optionalPageNumber parameter
+                self.executeFlickrSearchForPageNumber(latitude, longitude: longitude, optionalPageNumber: randomPageNumberFromResults, completionHandler: completionHandler)
                 
             //lastly, if there are either one or two pages of results, the data is cast to an array of NSDictionaries then finally cast to an array of Dictionaries which is passed back to the caller via the completion handler; note there is NO additional call (re-execution) of the Flickr search for this case, since we will always be using the first page of results (which is the default page returned by Flickr when no page number is specified)
             } else {
@@ -179,7 +181,8 @@ class FlickrClient {
                           Constants.FlickrClientConstants.FlickrParameterKeys.Latitude: "\(latitude)",
                           Constants.FlickrClientConstants.FlickrParameterKeys.Longitude: "\(longitude)"]
         
-        if let optionalPageNumber = optionalPageNumber {  //almost forgot to unwrap this!  doing so sends "Optional(8)" as part of the URL string!
+        //almost forgot to unwrap this!  doing so would send "Optional(8)" as part of the URL string!
+        if let optionalPageNumber = optionalPageNumber {
             parameters[Constants.FlickrClientConstants.FlickrParameterKeys.PageNumber] = "\(optionalPageNumber)"
         }
         
