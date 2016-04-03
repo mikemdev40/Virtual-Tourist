@@ -114,6 +114,9 @@ class MapViewController: UIViewController {
         
         //since the convertPoint is occurring on the same mapView as the destination mapView, the only conversion that is happening is a conversion of the point from a gesture-based CGPoint (where the user released the pin) to the geographical CLLocationCoordinate2D type that is required in order to add the location to a mapView
         coordinate = mapView.convertPoint(gesture.locationInView(mapView), toCoordinateFromView: mapView)
+        
+        //offsets the pin vertically by a small amount so the user can see with a finger placed on the screen where the tip of the pin is going to be located
+        coordinate.latitude += Constants.MapViewConstants.PinDropLatitudeOffset
     }
     
     ///method that takes a coordinate and executes the flickr search for images and if no error is returned, passes the returned array of photo data (but not yet the image files themselves) to the core data stack for processing and creating new Photo objects (which are attached via the core data's inverse relationship to the specified "pinToSaveTo" PinAnnotation)
