@@ -19,6 +19,8 @@
 		7A41219F1CA64541009303CB /* Model.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7A41219D1CA64541009303CB /* Model.xcdatamodeld */; };
 		7A4121A41CA64911009303CB /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4121A31CA64911009303CB /* Photo.swift */; };
 		7A4121A61CA6EE61009303CB /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A4121A51CA6EE61009303CB /* CoreDataStack.swift */; };
+		7A4D0B041CB1DD8800001858 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7A4D0B031CB1DD8800001858 /* Launch Screen.storyboard */; };
+		7A4D0B061CB1DD9C00001858 /* background.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 7A4D0B051CB1DD9C00001858 /* background.jpg */; };
 		7A51DB711CA5A72400A6A1FA /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A51DB701CA5A72400A6A1FA /* PhotoCollectionViewCell.swift */; };
 		7A51DB731CA5B40C00A6A1FA /* FlickrClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A51DB721CA5B40C00A6A1FA /* FlickrClient.swift */; };
 /* End PBXBuildFile section */
@@ -38,6 +40,8 @@
 		7A41219E1CA64541009303CB /* Model.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Model.xcdatamodel; sourceTree = "<group>"; };
 		7A4121A31CA64911009303CB /* Photo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
 		7A4121A51CA6EE61009303CB /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		7A4D0B031CB1DD8800001858 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		7A4D0B051CB1DD9C00001858 /* background.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = background.jpg; sourceTree = "<group>"; };
 		7A51DB701CA5A72400A6A1FA /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
 		7A51DB721CA5B40C00A6A1FA /* FlickrClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlickrClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -78,6 +82,8 @@
 				7A4121A11CA64662009303CB /* View */,
 				7A4121A21CA6466A009303CB /* Controllers */,
 				7A0091A71C93C92D00757C49 /* Main.storyboard */,
+				7A4D0B031CB1DD8800001858 /* Launch Screen.storyboard */,
+				7A4D0B051CB1DD9C00001858 /* background.jpg */,
 				7A0091AA1C93C92D00757C49 /* Assets.xcassets */,
 				7A0091AC1C93C92D00757C49 /* LaunchScreen.storyboard */,
 				7A0091AF1C93C92D00757C49 /* Info.plist */,
@@ -175,7 +181,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				7A0091AE1C93C92D00757C49 /* LaunchScreen.storyboard in Resources */,
+				7A4D0B061CB1DD9C00001858 /* background.jpg in Resources */,
 				7A0091AB1C93C92D00757C49 /* Assets.xcassets in Resources */,
+				7A4D0B041CB1DD8800001858 /* Launch Screen.storyboard in Resources */,
 				7A0091A91C93C92D00757C49 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
