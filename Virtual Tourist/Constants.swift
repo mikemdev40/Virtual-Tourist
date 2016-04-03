@@ -19,6 +19,7 @@ class Constants {
     }
     
     struct PhotoAlbumConstants {
+        //span delta longitude is a constant; however, span delta latitude is a computed property on the PhotoAlbumViewController that is based upon the longitude constant a ratio of the map view width and height, which is dependent on the device size
         static let SpanDeltaLongitude: CLLocationDegrees = 2
         static let CellVerticalSpacing: CGFloat = 4
         static let CellAlphaWhenSelectedForDelete: CGFloat = 0.35
@@ -30,7 +31,9 @@ class Constants {
             static let APIHost = "api.flickr.com"
             static let APIPath = "/services/rest"
             static let MinPagesInResultBeforeResubmitting = 2
-            static let MaxNumberPagesThatReturnResults = 4 //this was determined via experimentation with Flickr API; for large sets of images, only the first 4 pages actually return photo data (even though the documentation says 4000 photos, it's actually 4 pages of 250 each); page 5 and on return none.
+            
+            //this was determined via experimentation with Flickr API; for large sets of images, only the first 4 pages actually return photo data (even though the documentation says 4000 photos, it's actually 4 pages of 250 each); page 5 and on return none.
+            static let MaxNumberPagesThatReturnResults = 4
         }
         
         // Flickr Parameter Keys
@@ -39,11 +42,15 @@ class Constants {
             static let APIKey = "api_key"
             static let Extras = "extras"
             static let Format = "format"
-            static let NoJSONCallback = "nojsoncallback" //From Flickr docs: If you just want the raw JSON, with no function wrapper, add the parameter nojsoncallback with a value of 1 to your request.
+            
+            //From Flickr docs: If you just want the raw JSON, with no function wrapper, add the parameter nojsoncallback with a value of 1 to your request.
+            static let NoJSONCallback = "nojsoncallback"
             static let SafeSearch = "safe_search"
             static let Radius = "radius"
             static let RadiusUnits = "radius_units"
-            static let MinDateOfPhoto = "min_taken_date" //From Flickr docs: If no limiting factor is passed we return only photos added in the last 12 hours; this parameter serves as a limiting factor to ensure photos older than 12 hours are included
+            
+            //From Flickr docs: If no limiting factor is passed we return only photos added in the last 12 hours; this parameter serves as a limiting factor to ensure photos older than 12 hours are included
+            static let MinDateOfPhoto = "min_taken_date"
             
             //the associated values for the two keys below are determined by user and don't have pre-defined constant values
             static let PageNumber = "page"

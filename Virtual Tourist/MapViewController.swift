@@ -41,7 +41,7 @@ class MapViewController: UIViewController {
     //used within touchesBegan to ensure that the "delete" button stays presented in edit mode when a user taps between pins before deleting any, and goes back to the "select a pin to delete" when the user taps off a pin in edit mode
     var userTappedMapNotPin = true
     
-    //add and set up a longpress gesture recognizer to the map view when the map view outlet gets set
+    //set the map view's delegate and add and set up a longpress gesture recognizer to the map view when the outlet gets set
     @IBOutlet weak var mapView: MKMapView! {
         didSet {
             mapView.delegate = self
@@ -124,7 +124,7 @@ class MapViewController: UIViewController {
         
         flickrClient.executeGeoBasedFlickrSearch(coordinate.latitude, longitude: coordinate.longitude) {[unowned self] (success, photoArray, error) in
             
-            //dispatch to main queue since all possible avenues for what happens next should happen on main queue, including displaying an alert in the event of an error or updating the persistent store via the savePhotosToPin method
+            //dispatch to main queue now since all possible avenues for what happens next involve either the UI or core data updates (which occur within the savePhotosToPin method)
             dispatch_async(dispatch_get_main_queue()) {
                 guard error == nil else {
                     self.callAlert("Error", message: error!, alertHandler: nil, presentationCompletionHandler: nil)
@@ -143,13 +143,6 @@ class MapViewController: UIViewController {
                 self.imageFetchExecuting = false
             }
         }
-    }
-    
-    ///method that displays an alert (i have reused this method across various projects!); it takes optional completion handlers for when the button is tapped and also when the display is presented (which in this project are both always nil; i have kept them in simply because it keeps this function generic and reusable, and copyable/pastable from project to project)
-    func callAlert(title: String, message: String, alertHandler: ((UIAlertAction) -> Void)?, presentationCompletionHandler: (() -> Void)?) {
-        let alertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
-        alertController.addAction(UIAlertAction(title: "OK", style: .Default, handler: alertHandler))
-        presentViewController(alertController, animated: true, completion: presentationCompletionHandler)
     }
     
     ///this method has been taken from http://stackoverflow.com/questions/33131213/regiondidchange-called-several-times-on-app-load-swift and is used to detect whether the map region was updated as a result of a user interacting with the map (i.e. through the user scrolling zooming); this method is needed for proper loading of the most recent zoom/pan of the map, which gets saved when a user updates it and saved/loaded each time the app is run; this method is used within the "regionDidChangeAnimated" map delegate method, and is only needed for the initial loading of the map, because when the app loads, the map gets initially set and regionDidChangeAnimated method gets called in between viewWillAppear and viewDidAppear (and this initial location is shifted off center from the loaded/saved location), but this initial setting is NOT a result of the user interacting with the map and so we do NOT want to save it as though it was a user-selected location for a save (and potentially immediately overwrite a user's saved location that has yet to even be loaded!); hence, in the regionDidChangeAnimated method, this method is invoked to check to see if the region was changed as a result of the USER moving it, which allows for the distinction between when the app "pre-sets" the map upon loading (which is NOT saved) and a user-generated region update which IS saved to NSUserDefaults
@@ -228,6 +221,13 @@ class MapViewController: UIViewController {
                 })
             }
         }
+    }
+    
+    ///method that displays an alert (i have reused this method across various projects!); it takes optional completion handlers for when the button is tapped and also when the display is presented (which in this project are both always nil; i have kept them in simply because it keeps this function generic and reusable, and copyable/pastable from project to project)
+    func callAlert(title: String, message: String, alertHandler: ((UIAlertAction) -> Void)?, presentationCompletionHandler: (() -> Void)?) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .Alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: .Default, handler: alertHandler))
+        presentViewController(alertController, animated: true, completion: presentationCompletionHandler)
     }
     
     //MARK: -------- VIEW CONTROLLER METHODS --------
