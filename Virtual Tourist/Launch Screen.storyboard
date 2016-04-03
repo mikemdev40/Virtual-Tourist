@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -17,31 +18,28 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="background.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="cCz-TT-VUt">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="background.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="cCz-TT-VUt">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Developed by Mike Miller" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f0Q-4G-sva">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Developed by Mike Miller" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f0Q-4G-sva">
                                 <rect key="frame" x="204" y="559" width="192" height="21"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" red="0.60000002379999995" green="0.60000002379999995" blue="0.60000002379999995" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Udacity iOS Developer Nanodegree" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DLO-ew-7QR">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Udacity iOS Developer Nanodegree" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DLO-ew-7QR">
                                 <rect key="frame" x="156.5" y="367" width="287" height="21"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="18"/>
                                 <color key="textColor" red="1" green="0.80000001190000003" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Virtual Tourist" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qht-u2-2hi">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Virtual Tourist" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qht-u2-2hi">
                                 <rect key="frame" x="211" y="240" width="178" height="119.5"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="178" id="eU5-q0-Uwn"/>
-                                </constraints>
                                 <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="50"/>
                                 <color key="textColor" red="0.40000000600000002" green="1" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PROJECT 4" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A6P-KM-4zl">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="PROJECT 4" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A6P-KM-4zl">
                                 <rect key="frame" x="252" y="396" width="97" height="21"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="18"/>
                                 <color key="textColor" red="0.80000001190000003" green="0.80000001190000003" blue="0.80000001190000003" alpha="1" colorSpace="calibratedRGB"/>
@@ -50,17 +48,10 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="cCz-TT-VUt" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="Git-Hf-djW"/>
-                            <constraint firstItem="qht-u2-2hi" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="JZU-Vb-NgE"/>
-                            <constraint firstItem="cCz-TT-VUt" firstAttribute="bottom" secondItem="xb3-aO-Qok" secondAttribute="top" id="JxD-1C-CQE"/>
-                            <constraint firstItem="A6P-KM-4zl" firstAttribute="centerX" secondItem="DLO-ew-7QR" secondAttribute="centerX" id="URw-Gp-mK3"/>
-                            <constraint firstItem="cCz-TT-VUt" firstAttribute="centerY" secondItem="qht-u2-2hi" secondAttribute="centerY" id="XTM-jh-nOI"/>
-                            <constraint firstItem="A6P-KM-4zl" firstAttribute="top" secondItem="DLO-ew-7QR" secondAttribute="bottom" constant="8" id="h8h-mw-uBH"/>
-                            <constraint firstItem="DLO-ew-7QR" firstAttribute="centerX" secondItem="qht-u2-2hi" secondAttribute="centerX" id="hSp-u3-oNA"/>
-                            <constraint firstItem="qht-u2-2hi" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="n3x-ZR-5ai"/>
-                            <constraint firstItem="f0Q-4G-sva" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="rK8-1b-hs9"/>
-                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="f0Q-4G-sva" secondAttribute="bottom" constant="20" id="s0B-CK-qn4"/>
-                            <constraint firstItem="DLO-ew-7QR" firstAttribute="top" secondItem="qht-u2-2hi" secondAttribute="bottom" constant="7.5" id="z3o-Dz-zWa"/>
+                            <constraint firstItem="cCz-TT-VUt" firstAttribute="top" secondItem="Ze5-6b-2t3" secondAttribute="topMargin" id="MYG-Pf-SKt"/>
+                            <constraint firstItem="xb3-aO-Qok" firstAttribute="top" secondItem="cCz-TT-VUt" secondAttribute="bottom" id="azP-Zd-XNs"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="cCz-TT-VUt" secondAttribute="trailing" constant="-20" id="yyb-7h-lCC"/>
+                            <constraint firstItem="cCz-TT-VUt" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" constant="-20" id="zYK-Iv-jGs"/>
                         </constraints>
                     </view>
                 </viewController>
