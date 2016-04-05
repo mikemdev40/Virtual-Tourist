@@ -8,3 +8,5 @@
 • Locations and image information is persisted using Core Data, and photo files are stored and retrieved from the app's Document Directory.
 
 • Features image caching via NSCachedURLResponse and custom collection view updated by a NSFetchedResultsController.
+
+**Short preview video of this app available on [my blog](http://mikemdev40.blogspot.com).**
