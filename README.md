@@ -1,4 +1,4 @@
-#On-the-Map
+#Virtual Tourist
 ###iOS Nanodegree Project 4
 
 • Photo app that allows the user to drop pins on a map and download Flickr images associated with that location.
